@@ -18,7 +18,7 @@
  */
 
 // ─── À RÉGLER ───────────────────────────────────────────────────────────────
-const SECRET = 'miel2026';   // code de l'espace producteur
+const SECRET = 'A-DEFINIR';  // ← remplacez par votre code avant tout déploiement
 const NOTIF  = '';           // votre e-mail pour être prévenu de chaque commande
                              // (laissez vide pour ne rien recevoir)
 // ────────────────────────────────────────────────────────────────────────────

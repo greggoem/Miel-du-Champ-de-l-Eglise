@@ -1,0 +1,128 @@
+<!--
+  Template de confirmation — Le Miel du Champ de l'Église
+  À coller dans EmailJS ▸ Email Templates ▸ votre template ▸ bouton « Code » (</>)
+
+  Réglages du template, dans les champs au-dessus de l'éditeur :
+    To email   : {{to_email}}
+    Bcc        : {{copie}}
+    Subject    : Votre commande de miel — livraison {{jour}}
+    From name  : Le Miel du Champ de l'Église
+    Reply to   : votre adresse
+
+  Tout est en style en ligne et en tableaux : c'est laid à lire, mais c'est la
+  seule mise en forme que les logiciels de messagerie respectent vraiment.
+-->
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f3f0e3;margin:0;padding:24px 12px;font-family:Helvetica,Arial,sans-serif;">
+  <tr>
+    <td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background:#ffffff;border:1px solid #dad3c0;">
+
+        <!-- bandeau -->
+        <tr>
+          <td style="padding:30px 32px 24px;border-bottom:4px solid #e9b23c;">
+            <div style="font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:25px;line-height:1.15;letter-spacing:-0.5px;color:#000000;text-transform:uppercase;">
+              Miel du Champ<br>de l'Église
+            </div>
+            <div style="font-size:11px;letter-spacing:4px;color:#5c5c5c;padding-top:10px;text-transform:uppercase;">
+              &bull; Pure honey &bull; Récolte 2026
+            </div>
+          </td>
+        </tr>
+
+        <!-- message -->
+        <tr>
+          <td style="padding:30px 32px 6px;font-size:16px;line-height:1.6;color:#000000;">
+            Bonjour {{nom}},
+            <p style="margin:14px 0 0;">
+              Votre commande est bien notée, merci beaucoup. Voici le récapitulatif ;
+              gardez-le sous la main, il contient l'essentiel.
+            </p>
+          </td>
+        </tr>
+
+        <!-- la commande -->
+        <tr>
+          <td style="padding:22px 32px 0;">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f8f6ec;border:1px solid #dad3c0;">
+              <tr>
+                <td style="padding:18px 20px;">
+                  <div style="font-size:11px;letter-spacing:2.5px;color:#5c5c5c;text-transform:uppercase;padding-bottom:10px;">Votre commande</div>
+                  <div style="font-size:17px;color:#000000;line-height:1.5;">{{pots}}</div>
+                  <div style="font-family:'Arial Black',Arial,sans-serif;font-size:27px;color:#a85d18;padding-top:8px;">{{total}}</div>
+                  <div style="font-size:14px;color:#5c5c5c;padding-top:6px;">À régler {{paiement}}.</div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- la livraison -->
+        <tr>
+          <td style="padding:14px 32px 0;">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #dad3c0;">
+              <tr>
+                <td style="padding:18px 20px;">
+                  <div style="font-size:11px;letter-spacing:2.5px;color:#5c5c5c;text-transform:uppercase;padding-bottom:12px;">La livraison</div>
+                  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="font-size:15px;color:#000000;line-height:1.6;">
+                    <tr>
+                      <td width="110" style="color:#5c5c5c;padding-bottom:6px;">Quand</td>
+                      <td style="padding-bottom:6px;"><strong>{{jour}}</strong>, {{creneau}}</td>
+                    </tr>
+                    <tr>
+                      <td style="color:#5c5c5c;padding-bottom:6px;">Où</td>
+                      <td style="padding-bottom:6px;">{{adresse}}</td>
+                    </tr>
+                    <tr>
+                      <td style="color:#5c5c5c;padding-bottom:6px;">Si absent</td>
+                      <td style="padding-bottom:6px;">{{presence}}</td>
+                    </tr>
+                    <tr>
+                      <td style="color:#5c5c5c;">Votre mot</td>
+                      <td>{{remarque}}</td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- qui passe -->
+        <tr>
+          <td style="padding:22px 32px 0;font-size:15px;line-height:1.6;color:#000000;">
+            C'est Gabriel, notre fils, qui passera. Un imprévu, un changement d'heure ?
+            Répondez simplement à ce message, ou faites-nous signe au {{telephone}} —
+            c'est le numéro que vous nous avez laissé, nous vous joindrons dessus.
+          </td>
+        </tr>
+
+        <!-- conseil de conservation -->
+        <tr>
+          <td style="padding:22px 32px 0;">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top:1px solid #dad3c0;">
+              <tr>
+                <td style="padding-top:18px;font-size:13px;line-height:1.7;color:#5c5c5c;">
+                  Le miel de printemps cristallise et devient tartinable : c'est le signe
+                  d'un miel qui n'a pas été chauffé. À conserver à l'abri de l'humidité,
+                  autour de 14 °C. À consommer de préférence avant fin 2028.
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- pied -->
+        <tr>
+          <td style="padding:26px 32px 30px;">
+            <div style="border-top:4px solid #e9b23c;padding-top:16px;font-size:12px;line-height:1.8;color:#5c5c5c;">
+              <strong style="color:#000000;">Le Miel du Champ de l'Église</strong><br>
+              Récolté en famille par Julie et Greg<br>
+              Chemin du Champ de l'Église, 1640 Rhode St Genèse
+            </div>
+          </td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>

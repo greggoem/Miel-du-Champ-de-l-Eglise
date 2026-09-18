@@ -269,8 +269,13 @@ async function reprendreSession(){
   }catch(e){ return false; }
 }
 
-// Confirmation par e-mail via EmailJS. Laisser les champs vides désactive
-// simplement l'envoi : la commande passe quand même.
+// Mode d'envoi de la confirmation :
+//   'edge'    → fonction Supabase, la clé du service reste côté serveur (recommandé)
+//   'emailjs' → EmailJS, clé visible dans cette page
+//   ''        → aucune confirmation envoyée
+// Dans tous les cas, un échec d'envoi ne fait jamais échouer la commande.
+const ENVOI = 'emailjs';
+
 const MAIL = {
   service:  'service_s84tn09',     // Service ID  (EmailJS ▸ Email Services)
   modele:   'template_h1gc6es',    // Template ID (EmailJS ▸ Email Templates)
@@ -278,31 +283,59 @@ const MAIL = {
   copie:    'greg@goemaere.com'    // votre copie de chaque commande
 };
 
-async function envoyerMail(c){
-  if(!MAIL.service || !MAIL.modele || !MAIL.cle || !c.email) return false;
+// Données communes aux deux modes d'envoi.
+function recapMail(c){
   const pots = [];
   if(c.printemps) pots.push(c.printemps + ' pot' + (c.printemps>1?'s':'') + ' de printemps');
   if(c.ete)       pots.push(c.ete + ' pot' + (c.ete>1?'s':'') + " d'été");
+  return {
+    nom: c.nom, email: c.email, tel: c.tel,
+    adresse: c.adresse + ', ' + c.ville,
+    ville: c.ville,
+    jour: joli(c.date), creneau: c.creneau,
+    pots: pots.join(' et '), total: c.total + ' €',
+    presence: c.presence, remarque: c.note || '',
+    paiement: c.paiement === 'cash'
+      ? 'en liquide ou par QR code à la livraison'
+      : 'par virement avant la livraison' + (cfg.iban ? ' sur ' + cfg.iban : '')
+  };
+}
+
+async function envoyerMail(c){
+  if(!c.email || !ENVOI) return false;
+  if(ENVOI === 'edge') return await envoyerViaEdge(c);
+  return await envoyerViaEmailJS(c);
+}
+
+// La clé de l'expéditeur vit dans les secrets Supabase, pas ici.
+async function envoyerViaEdge(c){
+  try{
+    const r = await fetch(`${SB.url}/functions/v1/confirmation`, {
+      method:'POST',
+      headers:{ apikey: SB.cle, Authorization: 'Bearer ' + SB.cle, 'Content-Type':'application/json' },
+      body: JSON.stringify(recapMail(c))
+    });
+    if(!r.ok){ console.error('Confirmation refusée :', r.status, (await r.text()).slice(0,300)); return false; }
+    return true;
+  }catch(e){ console.error('Confirmation non envoyée :', e); return false; }
+}
+
+async function envoyerViaEmailJS(c){
+  if(!MAIL.service || !MAIL.modele || !MAIL.cle) return false;
+  const p = recapMail(c);
   try{
     const r = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
         service_id: MAIL.service, template_id: MAIL.modele, user_id: MAIL.cle,
         template_params: {
-          to_email:   c.email,
-          copie:      MAIL.copie,
-          nom:        c.nom,
-          pots:       pots.join(' et '),
-          total:      c.total + ' €',
-          jour:       joli(c.date),
-          creneau:    c.creneau,
-          adresse:    c.adresse + ', ' + c.ville,
-          telephone:  c.tel,
-          presence:   c.presence,
-          remarque:   c.note || '—',
-          paiement:   c.paiement === 'cash' ? 'en liquide ou par QR code à la livraison'
-                                            : 'par virement avant la livraison'
-                        + (cfg.iban ? ' sur ' + cfg.iban : '')
+          to_email:  p.email,      copie:     MAIL.copie,
+          nom:       p.nom,        pots:      p.pots,
+          total:     p.total,      jour:      p.jour,
+          creneau:   p.creneau,    adresse:   p.adresse,
+          telephone: p.tel,        presence:  p.presence,
+          remarque:  p.remarque || '—',
+          paiement:  p.paiement
         }
       })
     });

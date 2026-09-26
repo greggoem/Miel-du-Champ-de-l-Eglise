@@ -7,7 +7,7 @@
  */
 
 // ─── À MODIFIER : le code de l'espace producteur ────────────────────────────
-const SECRET  = 'miel2026';
+const SECRET  = 'A-DEFINIR';   // ← remplacez par votre code avant tout déploiement
 // ────────────────────────────────────────────────────────────────────────────
 
 const DOSSIER = __DIR__ . '/donnees-miel';

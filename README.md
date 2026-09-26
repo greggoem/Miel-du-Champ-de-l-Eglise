@@ -32,6 +32,20 @@ pour Gabriel, s'ouvre dans Google Maps, ou s'imprime. Export CSV de l'ensemble.
    (la clé publique `sb_publishable_…`) et `email`.
 5. Déposer `index.html` sur l'hébergement.
 
+### Confirmation par e-mail
+
+1. Créer un compte sur [brevo.com](https://www.brevo.com), puis valider
+   l'adresse d'expéditeur : Senders ▸ Add a sender, et cliquer le mail reçu.
+2. Récupérer la clé API : nom du compte ▸ SMTP & API ▸ API Keys ▸ Generate.
+   Elle commence par `xkeysib-` et ne s'affiche qu'une fois.
+3. Supabase ▸ Edge Functions ▸ Deploy a new function ▸ Via Editor, nom
+   `confirmation`, coller `supabase/functions/confirmation/index.ts`, Deploy.
+4. Supabase ▸ Edge Functions ▸ Secrets : `CLE_BREVO`, `EXPEDITEUR`, `COPIE`.
+
+La clé Brevo ne quitte jamais les secrets Supabase. Rien de sensible ne figure
+dans `index.html` ni dans ce dépôt. Si l'envoi échoue, la commande est malgré
+tout enregistrée et la raison s'affiche dans la console du navigateur.
+
 La clé publique est destinée à figurer dans la page. Ce sont les règles
 d'accès définies dans `supabase.sql` qui protègent les données : un visiteur peut
 déposer une commande, il ne peut ni lister les commandes, ni lire celle du
@@ -43,6 +57,7 @@ voisin, ni modifier une commande enregistrée.
 |---|---|
 | `index.html` | Toute l'application : présentation, commande, gestion |
 | `supabase.sql` | Table et règles d'accès à exécuter une fois |
+| `supabase/functions/confirmation/index.ts` | Fonction Edge qui envoie la confirmation via Brevo |
 | `backends/stockage.php` | Variante pour un hébergement avec PHP |
 | `backends/Code.gs` | Variante Google Apps Script, commandes dans un classeur |
 

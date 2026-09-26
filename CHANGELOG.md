@@ -5,6 +5,13 @@ fichier. Les états intermédiaires n'ont pas été conservés : ce journal retr
 les étapes de mémoire, il ne correspond pas à des commits réels. L'historique
 git commence à la mise en dépôt.
 
+## Confirmations par e-mail — septembre 2026
+
+Premier essai via EmailJS, abandonné : la clé devait figurer dans la page et la
+restriction par domaine est réservée aux formules payantes. Remplacé par une
+fonction Edge Supabase qui envoie via Brevo, la clé restant dans les secrets du
+projet. EmailJS entièrement retiré du code et du dépôt.
+
 ## Mise en dépôt — septembre 2026
 
 Version en service : page unique branchée sur Supabase.

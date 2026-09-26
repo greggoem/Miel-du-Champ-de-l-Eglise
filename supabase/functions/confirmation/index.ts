@@ -1,24 +1,25 @@
 /**
  * Confirmation de commande — Le Miel du Champ de l'Église
  *
- * Fonction Edge Supabase. La clé du service d'envoi reste dans les secrets du
- * projet : elle ne descend jamais dans le navigateur, contrairement à EmailJS.
+ * Fonction Edge Supabase. La clé Brevo reste dans les secrets du projet :
+ * elle ne descend jamais dans le navigateur.
  *
- * INSTALLATION (tout depuis le tableau de bord, sans ligne de commande)
- *  1. Supabase ▸ Edge Functions ▸ Deploy a new function ▸ Via Editor
- *  2. Nom : confirmation. Effacer l'exemple, coller ce fichier, Deploy.
- *  3. Supabase ▸ Edge Functions ▸ Secrets, ajouter selon le fournisseur choisi :
- *       FOURNISSEUR   resend   ou   brevo
- *       CLE_ENVOI     la clé API du service
- *       EXPEDITEUR    l'adresse d'envoi, ex. miel@ordiman.com
- *       COPIE         votre adresse, pour recevoir une copie de chaque commande
- *  4. Dans la page, passer  const ENVOI = 'edge'
+ * INSTALLATION — tout au clavier, sans ligne de commande
  *
- * QUEL FOURNISSEUR
- *  • resend.com — le plus soigné, 3 000 envois par mois. Exige de vérifier un
- *    domaine en ajoutant des enregistrements DNS chez votre hébergeur.
- *  • brevo.com — 300 envois par jour. Une simple validation de l'adresse
- *    d'expéditeur suffit, sans toucher au DNS. Plus simple si le DNS vous rebute.
+ *  1. Créer un compte sur brevo.com et valider l'adresse d'expéditeur
+ *     (Senders ▸ Add a sender, puis clic sur le mail de confirmation).
+ *  2. Récupérer la clé API : votre nom en haut à droite ▸ SMTP & API ▸ API Keys
+ *     ▸ Generate a new API key. Elle commence par xkeysib- et ne s'affiche
+ *     qu'une seule fois.
+ *  3. Supabase ▸ Edge Functions ▸ Deploy a new function ▸ Via Editor.
+ *     Nom : confirmation. Effacer l'exemple, coller ce fichier, Deploy.
+ *  4. Supabase ▸ Edge Functions ▸ Secrets, ajouter :
+ *       CLE_BREVO    la clé xkeysib-…
+ *       EXPEDITEUR   l'adresse validée à l'étape 1
+ *       COPIE        votre adresse, pour recevoir une copie de chaque commande
+ *  5. Tester avec le bouton Test de l'éditeur avant de passer en production.
+ *
+ * Quota gratuit : 300 envois par jour.
  */
 
 const CORS = {
@@ -111,44 +112,26 @@ function corpsHtml(c: Commande): string {
 }
 
 async function envoyer(c: Commande) {
-  const fournisseur = (Deno.env.get('FOURNISSEUR') || 'resend').toLowerCase();
-  const cle        = Deno.env.get('CLE_ENVOI') || '';
+  const cle        = Deno.env.get('CLE_BREVO') || '';
   const expediteur = Deno.env.get('EXPEDITEUR') || '';
   const copie      = Deno.env.get('COPIE') || '';
-  if (!cle || !expediteur) throw new Error('CLE_ENVOI ou EXPEDITEUR manquant dans les secrets');
+  if (!cle)        throw new Error('secret CLE_BREVO absent');
+  if (!expediteur) throw new Error('secret EXPEDITEUR absent');
 
-  const sujet = `Votre commande de miel — livraison ${c.jour}`;
-  const html  = corpsHtml(c);
-
-  if (fournisseur === 'brevo') {
-    const r = await fetch('https://api.brevo.com/v3/smtp/email', {
-      method: 'POST',
-      headers: { 'api-key': cle, 'Content-Type': 'application/json', accept: 'application/json' },
-      body: JSON.stringify({
-        sender: { email: expediteur, name: "Le Miel du Champ de l'Église" },
-        to: [{ email: c.email, name: c.nom }],
-        ...(copie ? { bcc: [{ email: copie }] } : {}),
-        ...(copie ? { replyTo: { email: copie } } : {}),
-        subject: sujet,
-        htmlContent: html
-      })
-    });
-    if (!r.ok) throw new Error('Brevo ' + r.status + ' ' + (await r.text()).slice(0, 300));
-    return;
-  }
-
-  const r = await fetch('https://api.resend.com/emails', {
+  const r = await fetch('https://api.brevo.com/v3/smtp/email', {
     method: 'POST',
-    headers: { Authorization: 'Bearer ' + cle, 'Content-Type': 'application/json' },
+    headers: { 'api-key': cle, 'Content-Type': 'application/json', accept: 'application/json' },
     body: JSON.stringify({
-      from: `Le Miel du Champ de l'Église <${expediteur}>`,
-      to: [c.email],
-      ...(copie ? { bcc: [copie], reply_to: copie } : {}),
-      subject: sujet,
-      html
+      sender: { email: expediteur, name: "Le Miel du Champ de l'Église" },
+      to: [{ email: c.email, name: c.nom }],
+      ...(copie ? { bcc: [{ email: copie }], replyTo: { email: copie } } : {}),
+      subject: `Votre commande de miel — livraison ${c.jour}`,
+      htmlContent: corpsHtml(c)
     })
   });
-  if (!r.ok) throw new Error('Resend ' + r.status + ' ' + (await r.text()).slice(0, 300));
+  if (!r.ok) {
+    throw new Error('Brevo ' + r.status + ' — ' + (await r.text()).slice(0, 300));
+  }
 }
 
 Deno.serve(async (req) => {

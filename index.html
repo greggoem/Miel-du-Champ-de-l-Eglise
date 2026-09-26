@@ -133,7 +133,8 @@ button.cta:disabled{opacity:.45;cursor:not-allowed}
 .tournee>h3{background:var(--ink);color:var(--paper);padding:9px 13px;border-radius:8px;margin-bottom:10px;
   display:flex;justify-content:space-between;font-size:.98rem}
 .slot{font-size:.86rem;color:var(--ink-soft);margin:14px 0 7px;border-bottom:1px solid var(--line);padding-bottom:3px}
-.charge{display:flex;gap:8px;margin:-4px 0 12px}
+.charge{display:flex;flex-wrap:wrap;gap:8px;margin:-4px 0 12px}
+.charge span{min-width:80px}
 .charge span{flex:1;background:#F8F6EC;border:1px solid var(--line);border-radius:8px;
   padding:7px 10px;font-size:.78rem;color:var(--ink-soft);text-align:center}
 .charge b{display:block;font-family:"Archivo Black","Arial Black",sans-serif;font-size:1.15rem;color:var(--ink)}
@@ -306,13 +307,16 @@ const DEFAULT_CFG = {
   communes: ['Rhode-Saint-Genèse | 1640 Sint-Genesius-Rode','Waterloo | 1410 Waterloo'],
   maison: "Kerkeveldweg 103",
   communeMaison: 'Rhode-Saint-Genèse',
-  jours: [3,6],              // mercredi, samedi
+  jours: [2,3,4,6],          // mardi, mercredi, jeudi, samedi
   semaines: 4,
   creneaux: ['10h — 13h','14h — 17h','17h — 20h'],
   creneauxParJour: {
+    2: ['17h — 20h'],
     3: ['14h — 17h','17h — 20h'],
+    4: ['17h — 20h'],
     6: ['10h — 13h','14h — 17h','17h — 20h']
-  }
+  },
+  partGabriel: 3               // € reversés à Gabriel par pot livré
 };
 
 let cfg = {...DEFAULT_CFG};
@@ -346,6 +350,8 @@ async function chargerCommandes(){
 
 /* ---------- dates ---------- */
 const JOURS=['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
+// Semaine entière, dans l'ordre naturel, pour les réglages.
+const JOURS_SEM=[[1,'Lundi'],[2,'Mardi'],[3,'Mercredi'],[4,'Jeudi'],[5,'Vendredi'],[6,'Samedi'],[0,'Dimanche']];
 const MOIS=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
 function prochainesDates(){
   const out=[], d=new Date(); d.setHours(0,0,0,0);
@@ -409,6 +415,9 @@ function jarSVG(pct, couleur){
 }
 
 /* ---------- page publique ---------- */
+const eur = n => (Math.round(n*100)/100).toLocaleString('fr-BE',{maximumFractionDigits:2}) + ' €';
+const partGabriel = pots => pots * (cfg.partGabriel || 0);
+
 function restant(t){ return Math.max(0, (cfg.stock[t]||0) - (vendu[t]||0)); }
 
 function vuePublique(){
@@ -1000,6 +1009,7 @@ function renduTournees(){
         <span><b>${pp}</b> printemps</span>
         <span><b>${pe}</b> été</span>
         <span><b>${pp+pe}</b> pots à charger</span>
+        <span><b>${eur(partGabriel(pp+pe))}</b> pour Gabriel</span>
       </div>
       ${html}
       <div class="acts">
@@ -1017,7 +1027,10 @@ function renduTournees(){
   z.querySelectorAll('[data-copie]').forEach(b=>b.onclick=()=>{
     const j=b.dataset.copie;
     const l = trier(j).filter(c=>c.statut!=='livree');
-    const txt = 'Tournée du '+joli(j)+' — départ et retour : '+maisonComplete()+'\n\n' + l.map((c,i)=>
+    const potsT = l.reduce((n,c)=>n+c.printemps+c.ete,0);
+    const txt = 'Tournée du '+joli(j)+' — départ et retour : '+maisonComplete()+'\n'
+      + `${potsT} pot${potsT>1?'s':''} à livrer — ${eur(partGabriel(potsT))} pour toi\n\n`
+      + l.map((c,i)=>
       `${i+1}. ${c.creneau} — ${c.nom}\n${c.adresse}, ${c.ville}\n${c.tel}\n`
       + `${c.printemps?c.printemps+' printemps  ':''}${c.ete?c.ete+' été':''}\n`
       + `${c.total} € ${c.paiement==='cash'&&!c.paye?'(à encaisser)':'(déjà réglé)'}\n`
@@ -1188,6 +1201,7 @@ function renduStats(){
   const ca = somme(l, c=>c.total);
   const encaisse = somme(l.filter(c=>c.paye), c=>c.total);
   const livrees  = l.filter(c=>c.statut==='livree').length;
+  const potsLivres = somme(l.filter(c=>c.statut==='livree'), c=>c.printemps+c.ete);
   const panier   = Math.round(ca / l.length);
   const potsRestants = restant('printemps') + restant('ete');
   const valeurStock  = potsRestants * cfg.prix;
@@ -1227,6 +1241,7 @@ function renduStats(){
       <div class="stat"><b>${encaisse} €</b><span>déjà encaissé</span></div>
       <div class="stat"><b>${l.length}</b><span>commandes</span></div>
       <div class="stat"><b>${panier} €</b><span>panier moyen</span></div>
+      <div class="stat"><b>${eur(partGabriel(potsLivres))}</b><span>gagnés par Gabriel</span></div>
       <div class="stat"><b>${livrees}</b><span>livrées</span></div>
     </div>
 
@@ -1235,6 +1250,18 @@ function renduStats(){
       ${jauge('Printemps', vp, cfg.stock.printemps, 'var(--printemps)')}
       ${jauge('Été', ve, cfg.stock.ete, 'var(--ete)')}
       <p style="margin:0"><small>Il reste ${potsRestants} pots, soit ${valeurStock} € de stock à vendre.</small></p>
+    </div>
+
+    <div class="reglage">
+      <h3>La part de Gabriel</h3>
+      <p style="margin:0 0 .8rem"><small>${eur(cfg.partGabriel||0)} par pot livré.</small></p>
+      <div class="rang"><span class="n">Déjà livrés</span>
+        <span class="p"><i style="width:${vp+ve ? Math.round(potsLivres/(vp+ve)*100) : 0}%"></i></span>
+        <span class="v" style="width:60px">${eur(partGabriel(potsLivres))}</span></div>
+      <div class="rang"><span class="n">Commandés</span>
+        <span class="p"><i style="width:100%"></i></span>
+        <span class="v" style="width:60px">${eur(partGabriel(vp+ve))}</span></div>
+      <p style="margin:.6rem 0 0"><small>Reste ${eur(partGabriel(vp+ve-potsLivres))} à lui verser sur les commandes en cours.</small></p>
     </div>
 
     ${classement('Pots par commune', potsPar(c=>c.ville))}
@@ -1268,7 +1295,10 @@ function renduReglages(){
   </div>
   <div class="reglage">
     <h3>Vente</h3>
-    <div class="field"><label for="px">Prix du pot (€)</label><input id="px" type="text" inputmode="numeric" value="${cfg.prix}"></div>
+    <div class="row">
+      <div class="field"><label for="px">Prix du pot (€)</label><input id="px" type="text" inputmode="numeric" value="${cfg.prix}"></div>
+      <div class="field"><label for="pg">Part de Gabriel (€/pot)</label><input id="pg" type="text" inputmode="decimal" value="${cfg.partGabriel}"></div>
+    </div>
     <div class="field"><label for="ib">IBAN pour les virements</label><input id="ib" type="text" value="${esc(cfg.iban)}" placeholder="BE00 0000 0000 0000"></div>
     <div class="field"><label for="tl">Téléphone affiché aux clients</label><input id="tl" type="text" value="${esc(cfg.tel)}"></div>
     <div class="field"><label for="cm">Communes livrées (une par ligne, la première est proposée par défaut)</label>
@@ -1278,12 +1308,12 @@ function renduReglages(){
   <div class="reglage">
     <h3>Livraisons</h3>
     <div class="field"><label>Jours où Gabriel livre</label>
-      ${[[3,'Mercredi'],[6,'Samedi'],[0,'Dimanche'],[5,'Vendredi']].map(([n,l])=>
+      ${JOURS_SEM.map(([n,l])=>
         `<label class="choice ${cfg.jours.includes(n)?'on':''}"><input type="checkbox" class="jr" value="${n}" ${cfg.jours.includes(n)?'checked':''}><div>${l}</div></label>`).join('')}
     </div>
     <div class="field"><label>Créneaux proposés, jour par jour</label>
       <p style="margin:-.1rem 0 .7rem"><small>Un créneau par ligne. Laissez vide pour ne rien proposer ce jour-là.</small></p>
-      ${[[3,'Mercredi'],[6,'Samedi'],[0,'Dimanche'],[5,'Vendredi']].map(([n,l])=>
+      ${JOURS_SEM.map(([n,l])=>
         `<label for="cj${n}" style="font-weight:400;margin-top:.6rem">${l}</label>
          <textarea id="cj${n}" style="min-height:62px">${esc((cfg.creneauxParJour&&cfg.creneauxParJour[n]||[]).join('\n'))}</textarea>`).join('')}
     </div>
@@ -1309,13 +1339,15 @@ function renduReglages(){
     const n = (id,def) => { const x=parseInt(document.getElementById(id).value,10); return isNaN(x)?def:x; };
     cfg.stock = {printemps:n('sp',cfg.stock.printemps), ete:n('se',cfg.stock.ete)};
     cfg.prix = n('px',cfg.prix); cfg.semaines = Math.max(1,Math.min(12,n('sm',cfg.semaines)));
+    const pg = parseFloat(String(document.getElementById('pg').value).replace(',','.'));
+    cfg.partGabriel = isNaN(pg) ? cfg.partGabriel : Math.max(0, pg);
     cfg.iban = document.getElementById('ib').value.trim();
     cfg.tel = document.getElementById('tl').value.trim();
     const cd = document.getElementById('cd');
     if(cd) cfg.code = cd.value.trim() || cfg.code;
     cfg.jours = [...document.querySelectorAll('.jr:checked')].map(i=>Number(i.value));
     const par = {};
-    [3,6,0,5].forEach(n=>{
+    JOURS_SEM.map(j=>j[0]).forEach(n=>{
       const t = document.getElementById('cj'+n);
       const l = t ? t.value.split('\n').map(s=>s.trim()).filter(Boolean) : [];
       if(l.length) par[n] = l;

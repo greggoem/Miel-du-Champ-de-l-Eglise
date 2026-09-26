@@ -4,8 +4,9 @@ Boutique et gestion des livraisons du miel produit par Julie et Greg à
 Rhode-Saint-Genèse. Une seule page, sans framework ni build : présentation des
 deux miels, prise de commande, et un espace producteur qui organise les tournées.
 
-Récolte 2026, deux miels, pots de 500 g, livraison par Gabriel les mercredis
-et samedis à Rhode-Saint-Genèse et Waterloo.
+Récolte 2026, deux miels, pots de 500 g, livraison par Gabriel les mardis,
+mercredis, jeudis et samedis à Rhode-Saint-Genèse et Waterloo. Gabriel touche
+une part par pot livré, réglable dans l'espace producteur.
 
 ## Ce que fait la page
 

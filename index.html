@@ -1,0 +1,1088 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Le Miel du Champ de l'Église — Récolte 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --ink:#000000;
+  --ink-soft:#5C5C5C;
+  --paper:#FFFDF7;
+  --paper-2:#F1ECDE;
+  --line:#DAD3C0;
+  --or:#E9B23C;
+  --printemps:#EFC961;
+  --ete:#C1791C;
+  --alert:#8A2B14;
+  --ok:#3C6B34;
+  --r:10px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:Montserrat,system-ui,-apple-system,sans-serif;
+  font-size:17px;line-height:1.6;
+}
+.wrap{max-width:640px;margin:0 auto;padding:0 20px}
+h1,h2{font-family:"Archivo Black","Arial Black",sans-serif;font-weight:400;letter-spacing:-.02em;line-height:1.08;margin:0;text-transform:uppercase}
+h1{font-size:clamp(2rem,8vw,2.9rem)}
+h2{font-size:1.35rem;margin-bottom:.6rem}
+h3{font-size:1.05rem;font-family:Montserrat,sans-serif;font-weight:600;letter-spacing:.01em}
+.tracked{font-size:.76rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-soft);line-height:1.7}
+p{margin:0 0 1rem}
+a{color:inherit}
+small{font-size:.86rem;color:var(--ink-soft)}
+hr{border:0;border-top:1px solid var(--line);margin:2.6rem 0}
+
+/* ---------- hero ---------- */
+header.hero{background:#FFFFFF;color:var(--ink);border-bottom:1px solid var(--line);padding:1.2rem 0 2rem;overflow:hidden}
+header.hero .label{display:block;width:100%;height:auto;margin:0}
+header.hero p.lede{margin:1.2rem 0 0;max-width:none;text-wrap:pretty}
+.jars{display:flex;gap:20px;margin-top:1.8rem;border-top:1px solid var(--line);padding-top:1.4rem}
+.jar{flex:1;display:flex;gap:12px;align-items:center}
+.jar svg{display:block;width:46px;height:auto;flex:none}
+.jar b{display:block;font-family:"Archivo Black","Arial Black",sans-serif;font-size:1.5rem;font-weight:400;line-height:1}
+.jar span{display:block;font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin-top:2px}
+
+/* ---------- blocs ---------- */
+section{padding:2.4rem 0}
+.two{display:grid;gap:14px;grid-template-columns:1fr 1fr}
+@media(max-width:520px){.two{grid-template-columns:1fr}}
+.miel{border:1px solid var(--line);border-radius:var(--r);padding:16px;background:#F8F6EC}
+.miel .swatch{height:5px;border-radius:99px;margin-bottom:12px}
+.miel h3{margin-bottom:.3rem}
+.miel p{font-size:.95rem;margin:0;color:var(--ink-soft)}
+ol.steps{list-style:none;padding:0;margin:0;counter-reset:s}
+ol.steps li{counter-increment:s;padding:0 0 1rem 2.6rem;position:relative}
+ol.steps li::before{content:counter(s);position:absolute;left:0;top:.05rem;width:1.75rem;height:1.75rem;border-radius:99px;
+  background:var(--ink);color:var(--paper);display:grid;place-items:center;font-size:.9rem;font-weight:600}
+ol.steps b{display:block}
+ol.steps span{color:var(--ink-soft);font-size:.95rem}
+
+/* ---------- formulaire ---------- */
+label{display:block;font-weight:500;font-size:.95rem;margin:0 0 .3rem}
+.field{margin-bottom:1.15rem}
+input[type=text],input[type=tel],input[type=email],textarea,select{
+  width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:8px;background:#FCFBF5;
+  font:inherit;font-size:1rem;color:var(--ink)}
+textarea{min-height:74px;resize:vertical}
+input:focus,textarea:focus,select:focus,button:focus-visible,.choice:focus-within{outline:2.5px solid var(--ete);outline-offset:2px}
+.row{display:flex;gap:12px}
+.row>*{flex:1}
+.stepper{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:8px;padding:6px;background:#FCFBF5}
+.stepper button{width:38px;height:38px;border-radius:6px;border:1px solid var(--line);background:var(--paper-2);
+  font-size:1.25rem;line-height:1;cursor:pointer;color:var(--ink)}
+.stepper output{flex:1;text-align:center;font-family:"Archivo Black","Arial Black",sans-serif;font-size:1.35rem;font-weight:600}
+.pot{border:1px solid var(--line);border-radius:var(--r);padding:14px;background:#F8F6EC;margin-bottom:12px}
+.pot .top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.55rem}
+.pot .top em{font-style:normal;font-size:.85rem;color:var(--ink-soft);white-space:nowrap}
+.pot .top h3 .prix{font-weight:400;color:var(--ete);white-space:nowrap}
+.choice{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:11px 12px;
+  margin-bottom:8px;background:#FCFBF5;cursor:pointer}
+.choice input{margin:3px 0 0;accent-color:var(--ete);width:18px;height:18px;flex:none}
+.choice.on{border-color:var(--ink);background:#F1EEE0}
+.choice div{font-size:.95rem}
+.choice small{display:block}
+.total{display:flex;justify-content:space-between;align-items:center;background:var(--ink);color:var(--paper);
+  border-radius:var(--r);padding:14px 16px;margin:1.4rem 0}
+.total span{font-family:"Archivo Black","Arial Black",sans-serif;font-size:1.6rem;font-weight:600}
+button.cta{width:100%;padding:15px;border:0;border-radius:var(--r);background:var(--ete);color:#FFF8EA;
+  font:inherit;font-size:1.05rem;font-weight:600;cursor:pointer}
+button.cta:disabled{opacity:.45;cursor:not-allowed}
+.err{color:var(--alert);font-size:.9rem;margin-top:.6rem}
+.done{border:1px solid var(--ok);border-radius:var(--r);padding:20px;background:#EFF3E8}
+.done h2{color:var(--ok)}
+
+/* ---------- admin ---------- */
+.admin{background:#EEEBDD;min-height:100vh;padding-bottom:60px}
+.bar{background:var(--ink);color:var(--paper);padding:14px 0}
+.bar .wrap{display:flex;justify-content:space-between;align-items:center}
+.bar b{font-family:"Archivo Black","Arial Black",sans-serif;font-size:1.1rem}
+.bar button{background:none;border:1px solid #3B3B3B;color:var(--paper);border-radius:7px;padding:6px 11px;font:inherit;font-size:.88rem;cursor:pointer}
+.tabs{display:flex;gap:6px;margin:18px 0}
+.tabs button{flex:1;padding:9px;border:1px solid var(--line);background:#F8F6EC;border-radius:8px;font:inherit;font-size:.93rem;cursor:pointer;color:var(--ink)}
+.tabs button.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px}
+.stat{background:#F8F6EC;border:1px solid var(--line);border-radius:var(--r);padding:11px}
+.stat b{display:block;font-family:"Archivo Black","Arial Black",sans-serif;font-size:1.5rem;font-weight:600;line-height:1.1}
+.stat span{font-size:.78rem;color:var(--ink-soft)}
+.cmd{background:#F8F6EC;border:1px solid var(--line);border-radius:var(--r);padding:14px;margin-bottom:10px}
+.cmd.livree{opacity:.62}
+.cmd .h{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.cmd .h b{font-size:1.02rem}
+.cmd .money{font-family:"Archivo Black","Arial Black",sans-serif;font-weight:600;white-space:nowrap}
+.cmd .meta{font-size:.9rem;color:var(--ink-soft);margin-top:.35rem}
+.cmd .meta a{color:var(--ete)}
+.tag{display:inline-block;font-size:.78rem;padding:2px 8px;border-radius:99px;border:1px solid var(--line);margin:6px 6px 0 0}
+.tag.p{background:#F7EDCB;border-color:#DCC474}
+.tag.e{background:#F0DDC6;border-color:#C98F4F}
+.tag.note{background:#FFF;border-style:dashed}
+.acts{display:flex;gap:6px;margin-top:11px;flex-wrap:wrap}
+.acts button{padding:7px 11px;border:1px solid var(--line);background:var(--paper-2);border-radius:7px;font:inherit;font-size:.85rem;cursor:pointer;color:var(--ink)}
+.acts button.on{background:var(--ok);border-color:var(--ok);color:#fff}
+.tournee{margin-bottom:26px}
+.tournee>h3{background:var(--ink);color:var(--paper);padding:9px 13px;border-radius:8px;margin-bottom:10px;
+  display:flex;justify-content:space-between;font-size:.98rem}
+.slot{font-size:.86rem;color:var(--ink-soft);margin:14px 0 7px;border-bottom:1px solid var(--line);padding-bottom:3px}
+.empty{text-align:center;color:var(--ink-soft);padding:36px 12px;font-size:.95rem}
+.reglage{background:#F8F6EC;border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.foot{padding:26px 0 40px;text-align:center}
+.foot button{background:none;border:0;color:var(--ink-soft);font:inherit;font-size:.82rem;text-decoration:underline;cursor:pointer}
+@media print{.bar,.tabs,.acts,.stats,.foot{display:none}body{background:#fff}.cmd{break-inside:avoid}}
+@media(prefers-reduced-motion:no-preference){.fade{animation:f .35s ease both}}
+@keyframes f{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+</style>
+
+<div id="app"></div>
+
+<script>
+const KEY_CFG='miel:config', KEY_CNT='miel:compteur', PFX='miel:cmd:';
+// Dans un artefact Claude, window.storage existe et sert de stockage.
+// Ailleurs, la page parle à Supabase. Les trois valeurs ci-dessous sont à remplir.
+// Cette clé est publique par conception : ce sont les règles SQL du projet qui
+// protègent les données, pas le secret de la clé.
+const SB = {
+  url:   'https://omkguzdztjnmpfsnybvt.supabase.co',
+  cle:   'sb_publishable_wwfoSgy694paXq4mgQD7_A_g3OeBF8a',
+  email: 'greg@goemaere.com'   // compte producteur créé dans Supabase
+};
+
+let jeton = '';                      // jeton de session, obtenu à la connexion
+let dernierEchec = '';               // cause du dernier refus, affichée à l'écran
+const TABLE = '/rest/v1/miel_kv';
+
+function entetes(avecCorps){
+  // Supabase attend les deux en-têtes. Sans connexion, la clé publique tient
+  // lieu de jeton et donne le rôle « anon » ; connecté, c'est le jeton de session.
+  const h = {
+    apikey: SB.cle,
+    Authorization: 'Bearer ' + (jeton || SB.cle)
+  };
+  if(avecCorps) h['Content-Type'] = 'application/json';
+  return h;
+}
+
+async function verifier_reponse(r, quoi){
+  if(r.ok) return;
+  let detail = '';
+  try{ detail = (await r.text()).slice(0,300); }catch(e){}
+  throw new Error(quoi + ' — HTTP ' + r.status + (detail ? ' · ' + detail : ''));
+}
+
+const distant = {
+  async get(k){
+    const r = await fetch(`${SB.url}${TABLE}?cle=eq.${encodeURIComponent(k)}&select=valeur`, {headers: entetes()});
+    await verifier_reponse(r, 'lecture');
+    const d = await r.json();
+    return d.length ? {key:k, value:d[0].valeur} : null;
+  },
+  async set(k, v){
+    // Un visiteur ne dispose que du droit d'insertion : pour une nouvelle commande
+    // on fait un INSERT simple. L'upsert est réservé aux clés qu'il peut mettre à jour.
+    const upsert = !!jeton || k === 'miel:compteur' || k === 'miel:config';
+    const r = await fetch(`${SB.url}${TABLE}`, {
+      method: 'POST',
+      headers: Object.assign(entetes(true),
+        {Prefer: (upsert ? 'resolution=merge-duplicates,' : '') + 'return=minimal'}),
+      body: JSON.stringify([{cle:k, valeur:v, maj:new Date().toISOString()}])
+    });
+    await verifier_reponse(r, 'ecriture');
+    return {key:k, value:v};
+  },
+  async list(p){
+    const r = await fetch(`${SB.url}${TABLE}?cle=like.${encodeURIComponent((p||'') + '%')}&select=cle&order=cle`, {headers: entetes()});
+    await verifier_reponse(r, 'liste');
+    return {keys: (await r.json()).map(x => x.cle)};
+  },
+  async delete(k){
+    const r = await fetch(`${SB.url}${TABLE}?cle=eq.${encodeURIComponent(k)}`, {method:'DELETE', headers: entetes()});
+    await verifier_reponse(r, 'suppression');
+    return {key:k, deleted:true};
+  },
+  async connexion(motDePasse, adresse){
+    try{
+      const mail = adresse || SB.email;
+      const r = await fetch(`${SB.url}/auth/v1/token?grant_type=password`, {
+        method:'POST', headers:{apikey:SB.cle, 'Content-Type':'application/json'},
+        body: JSON.stringify({email: mail, password:motDePasse})
+      });
+      if(!r.ok){
+        let t = ''; try{ t = (await r.text()).slice(0,300); }catch(e){}
+        dernierEchec = 'connexion ' + mail + ' — HTTP ' + r.status + (t ? ' · ' + t : '');
+        console.error(dernierEchec);
+        return false;
+      }
+      const d = await r.json();
+      if(!d.access_token){ dernierEchec = "réponse sans jeton d'accès"; return false; }
+      jeton = d.access_token;
+      if(d.refresh_token) memoire('miel:session', d.refresh_token);
+      return true;
+    }catch(e){
+      dernierEchec = 'réseau : ' + (e && e.message ? e.message : String(e));
+      return false;
+    }
+  }
+};
+
+// Le mot de passe n'est jamais conservé : on garde seulement le jeton de session
+// délivré par Supabase, valable sur cet appareil et révocable à tout moment.
+function memoire(cle, val){
+  try{
+    if(val === null) localStorage.removeItem(cle);
+    else if(val === undefined) return localStorage.getItem(cle) || '';   // lecture
+    else localStorage.setItem(cle, val);
+  }catch(e){}
+  return '';
+}
+
+async function reprendreSession(){
+  const rt = memoire('miel:session');
+  if(!rt) return false;
+  try{
+    const r = await fetch(`${SB.url}/auth/v1/token?grant_type=refresh_token`, {
+      method:'POST', headers:{apikey:SB.cle, 'Content-Type':'application/json'},
+      body: JSON.stringify({refresh_token: rt})
+    });
+    if(!r.ok){ memoire('miel:session', null); return false; }
+    const d = await r.json();
+    if(!d.access_token) return false;
+    jeton = d.access_token;
+    if(d.refresh_token) memoire('miel:session', d.refresh_token);
+    return true;
+  }catch(e){ return false; }
+}
+
+const MODE = window.storage ? 'artefact' : 'web';
+const S = window.storage || distant;
+const app = document.getElementById('app');
+const esc = s => String(s??'').replace(/[<>&"]/g, c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
+
+const DEFAULT_CFG = {
+  prix: 12,
+  stock: { printemps: 170, ete: 190 },
+  iban: '',
+  code: 'miel2026',
+  tel: '',
+  communes: ['Rhode-Saint-Genèse | 1640 Sint-Genesius-Rode','Waterloo | 1410 Waterloo'],
+  maison: "Kerkeveldweg 103",
+  communeMaison: 'Rhode-Saint-Genèse',
+  jours: [3,6],              // mercredi, samedi
+  semaines: 4,
+  creneaux: ['10h — 13h','14h — 17h','17h — 20h'],
+  creneauxParJour: {
+    3: ['14h — 17h','17h — 20h'],
+    6: ['10h — 13h','14h — 17h','17h — 20h']
+  }
+};
+
+let cfg = {...DEFAULT_CFG};
+let vendu = { printemps:0, ete:0 };
+let panier = { printemps:0, ete:0 };
+let form = { creneau:'', presence:'', paiement:'cash' };
+let commandes = [];
+let onglet = 'tournees';
+
+/* ---------- stockage ---------- */
+async function jget(k){ try{ const r = await S.get(k,true); return r ? JSON.parse(r.value) : null; }catch(e){ return null; } }
+async function jset(k,v){
+  try{ await S.set(k, JSON.stringify(v), true); return true; }
+  catch(e){ dernierEchec = e && e.message ? e.message : String(e); console.error('Écriture refusée :', dernierEchec); return false; }
+}
+
+async function chargerBase(){
+  const c = await jget(KEY_CFG); if(c) cfg = {...DEFAULT_CFG, ...c};
+  const v = await jget(KEY_CNT); if(v) vendu = {...vendu, ...v};
+}
+async function chargerCommandes(){
+  let keys=[];
+  try{ const r = await S.list(PFX,true); keys = (r && r.keys) || []; }catch(e){ keys=[]; }
+  const out=[];
+  for(let i=0;i<keys.length;i+=8){
+    const lot = await Promise.all(keys.slice(i,i+8).map(k=>jget(k)));
+    lot.forEach((o,j)=>{ if(o){ o._key = keys[i+j]; out.push(o); } });
+  }
+  commandes = out.sort((a,b)=> (a.date||'').localeCompare(b.date||'') || (a.cree||0)-(b.cree||0));
+}
+
+/* ---------- dates ---------- */
+const JOURS=['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
+const MOIS=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+function prochainesDates(){
+  const out=[], d=new Date(); d.setHours(0,0,0,0);
+  const fin=new Date(d); fin.setDate(fin.getDate()+cfg.semaines*7);
+  d.setDate(d.getDate()+1);
+  while(d<=fin){ if(cfg.jours.includes(d.getDay())) out.push(new Date(d)); d.setDate(d.getDate()+1); }
+  return out;
+}
+const iso = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+function creneauxJour(j){
+  const m = cfg.creneauxParJour || {};
+  return (m[j] && m[j].length) ? m[j] : (cfg.creneaux || []);
+}
+function creneauxDate(dateIso){
+  return dateIso ? creneauxJour(new Date(dateIso+'T12:00:00').getDay()) : [];
+}
+function joli(s){
+  const d=new Date(s+'T12:00:00');
+  return JOURS[d.getDay()]+' '+d.getDate()+' '+MOIS[d.getMonth()];
+}
+
+/* ---------- étiquette ---------- */
+function etiquetteSVG(){
+  const cx=470, cy=288, r0=112, n=62;
+  let rayons='';
+  for(let i=0;i<n;i++){
+    const a = (i/n)*Math.PI*2;
+    const len = 52 + 62*Math.abs(Math.sin(i*2.4)) ;
+    const x1=cx+Math.cos(a)*r0, y1=cy+Math.sin(a)*r0;
+    const x2=cx+Math.cos(a)*(r0+len), y2=cy+Math.sin(a)*(r0+len);
+    rayons += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}"/>`;
+  }
+  return `<svg class="label" viewBox="0 0 880 560" role="img" aria-label="Miel du Champ de l'Église, 500 g, pure honey">
+    <g stroke="var(--or)" stroke-width="7" stroke-linecap="round">${rayons}</g>
+    <g transform="rotate(-17 440 288)">
+      <rect x="-30" y="196" width="940" height="176" fill="#fff"/>
+      <text x="440" y="240" text-anchor="middle" font-family="Montserrat,sans-serif" font-size="19"
+        font-weight="500" letter-spacing="4.5" fill="#000">500 GR • 100% NATURAL</text>
+      <text x="440" y="316" text-anchor="middle" font-family="'Archivo Black','Arial Black',sans-serif"
+        font-size="76" fill="#000" textLength="830" lengthAdjust="spacingAndGlyphs">MIEL DU CHAMP DE L'EGLISE</text>
+      <text x="440" y="356" text-anchor="middle" font-family="Montserrat,sans-serif" font-size="20"
+        font-weight="500" letter-spacing="5.5" fill="#000">• PURE HONEY •</text>
+    </g>
+  </svg>`;
+}
+
+/* ---------- pot SVG ---------- */
+function jarSVG(pct, couleur){
+  const h = Math.max(0, Math.min(1,pct)) * 52;
+  return `<svg viewBox="0 0 80 104" aria-hidden="true">
+    <rect x="22" y="3" width="36" height="10" rx="3" fill="#000"/>
+    <clipPath id="v${couleur.slice(1)}"><rect x="10" y="24" width="60" height="74" rx="8"/></clipPath>
+    <g clip-path="url(#v${couleur.slice(1)})">
+      <rect x="10" y="${44+(52-h)}" width="60" height="${h+8}" fill="${couleur}"/>
+    </g>
+    <rect x="10" y="24" width="60" height="74" rx="8" fill="none" stroke="#000" stroke-width="3.5"/>
+    <rect x="16" y="50" width="48" height="22" fill="#fff" stroke="#000" stroke-width="2.5"/>
+    <rect x="22" y="57" width="36" height="3" fill="#000"/>
+    <rect x="26" y="64" width="28" height="2" fill="#000" opacity=".5"/>
+  </svg>`;
+}
+
+/* ---------- page publique ---------- */
+function restant(t){ return Math.max(0, (cfg.stock[t]||0) - (vendu[t]||0)); }
+
+function vuePublique(){
+  const rp=restant('printemps'), re=restant('ete');
+  const dates = prochainesDates();
+  app.innerHTML = `
+  <header class="hero"><div class="wrap">
+    ${etiquetteSVG()}
+    <p class="lede">Nos ruches sont installées au bout de notre jardin au chemin du Champ de l'Église à Rhode St Genèse. Deux récoltes cette année, mises en pot de 500 g.</p>
+    <div class="jars">
+      <div class="jar">${jarSVG(cfg.stock.printemps? rp/cfg.stock.printemps:0,'#EFC961')}
+        <div><b>${rp}</b><span>pots de printemps</span></div></div>
+      <div class="jar">${jarSVG(cfg.stock.ete? re/cfg.stock.ete:0,'#C1791C')}
+        <div><b>${re}</b><span>pots d'été</span></div></div>
+    </div>
+  </div></header>
+
+  <div class="wrap">
+    <section>
+      <h2>Les deux miels</h2>
+      <div class="two">
+        <div class="miel"><div class="swatch" style="background:#E3C463"></div>
+          <h3>Printemps</h3>
+          <p>Clair et doux, butiné sur les fruitiers, le saule et le pissenlit.</p></div>
+        <div class="miel"><div class="swatch" style="background:#A85D18"></div>
+          <h3>Été</h3>
+          <p>Plus ambré et plus franc, marqué par le tilleul et la ronce.</p></div>
+      </div>
+      <p style="margin-top:1.2rem"><b>${cfg.prix} € le pot de 500 g.</b> Miel de fleurs artisanal, récolté en famille au 103 Ch. du Champ de l'Église. Rien d'autre dans le pot que le miel de nos ruches.</p>
+      <p class="tracked">Craint l'humidité · à conserver à 14 °C<br>À consommer de préférence avant fin 2028</p>
+    </section>
+
+    <hr>
+
+    <section>
+      <h2>Comment ça se passe</h2>
+      <ol class="steps">
+        <li><b>Vous commandez ici</b><span>Choisissez vos pots et le moment qui vous arrange.</span></li>
+        <li><b>Gabriel prépare la tournée</b><span>Il livre les mercredis et samedis, dans Rhode et les environs directs.</span></li>
+        <li><b>Vous payez à la livraison</b><span>En liquide, par QR code, ou par virement si vous préférez régler avant.</span></li>
+      </ol>
+    </section>
+
+    <hr>
+
+    <section id="commande">
+      <h2>Votre commande</h2>
+      <p><small>Livraison gratuite à Rhode-Saint-Genèse et communes limitrophes.</small></p>
+
+      <div class="pot">
+        <div class="top"><h3>Miel de printemps <span class="prix">${cfg.prix} € le pot</span></h3><em>${rp} disponibles</em></div>
+        <div class="stepper">
+          <button type="button" data-step="printemps,-1" aria-label="Retirer un pot de printemps">−</button>
+          <output id="out-printemps">0</output>
+          <button type="button" data-step="printemps,1" aria-label="Ajouter un pot de printemps">+</button>
+        </div>
+      </div>
+      <div class="pot">
+        <div class="top"><h3>Miel d'été <span class="prix">${cfg.prix} € le pot</span></h3><em>${re} disponibles</em></div>
+        <div class="stepper">
+          <button type="button" data-step="ete,-1" aria-label="Retirer un pot d'été">−</button>
+          <output id="out-ete">0</output>
+          <button type="button" data-step="ete,1" aria-label="Ajouter un pot d'été">+</button>
+        </div>
+      </div>
+
+      <div class="total"><span id="nbPots">0 pot</span><span id="prixTotal">0 €</span></div>
+
+      <div class="field"><label for="nom">Nom et prénom</label><input id="nom" type="text" autocomplete="name"></div>
+      <div class="field"><label for="tel">Téléphone</label><input id="tel" type="tel" autocomplete="tel" placeholder="0470 00 00 00"></div>
+      <div class="field"><label for="adr">Rue et numéro</label><input id="adr" type="text" autocomplete="street-address"></div>
+      <div class="field"><label for="ville">Commune</label><select id="ville">${(cfg.communes||[]).map((c,i)=>`<option value="${esc(nomCommune(c))}" ${i===0?'selected':''}>${esc(nomCommune(c))}</option>`).join('')}</select></div>
+
+      <div class="field">
+        <label for="date">Quand pouvons-nous passer ?</label>
+        <select id="date">
+          <option value="">Choisissez un jour</option>
+          ${dates.map(d=>`<option value="${iso(d)}">${joli(iso(d))}</option>`).join('')}
+        </select>
+      </div>
+      <div class="field">
+        <label>Moment de la journée</label>
+        <div id="crBloc"></div>
+      </div>
+
+      <div class="field">
+        <label>Si vous n'êtes pas là</label>
+        <label class="choice"><input type="radio" name="pr" value="Je serai chez moi"><div>Je serai chez moi<small>Sonnez simplement</small></div></label>
+        <label class="choice"><input type="radio" name="pr" value="Déposer devant la porte"><div>Déposez devant la porte ou dans la boîte aux lettres<small>Je règle par virement à l'avance</small></div></label>
+        <label class="choice"><input type="radio" name="pr" value="M'appeler avant de passer"><div>Appelez-moi avant de passer<small>Je m'arrange pour être là</small></div></label>
+        <label class="choice"><input type="radio" name="pr" value="Autre"><div>Autre — je précise dans le mot pour Gabriel</div></label>
+      </div>
+
+      <div class="field">
+        <label>Paiement</label>
+        <label class="choice"><input type="radio" name="pay" value="cash" checked><div>En liquide ou par QR code à la livraison</div></label>
+        <label class="choice"><input type="radio" name="pay" value="virement"><div>Par virement avant la livraison</div></label>
+      </div>
+
+      <div class="field"><label for="note">Un mot pour Gabriel (code de sonnette, étage, autre créneau…)</label><textarea id="note"></textarea></div>
+
+      <button class="cta" id="envoyer">Envoyer ma commande</button>
+      <p class="err" id="erreur" hidden></p>
+      <p style="margin-top:1rem"><small>Vos coordonnées servent uniquement à préparer la livraison.</small></p>
+    </section>
+
+    <p class="tracked" style="text-align:center;margin-top:2.4rem">Récolté en famille à Rhode St Genèse<br>par Julie Duplat</p>
+    <div class="foot"><button id="lienAdmin">Espace producteur</button></div>
+  </div>`;
+
+  app.querySelectorAll('[data-step]').forEach(b=>b.onclick=()=>{
+    const [t,n]=b.dataset.step.split(','); 
+    panier[t]=Math.max(0, Math.min(restant(t), panier[t]+Number(n)));
+    majTotal();
+  });
+  brancherChoix();
+  const selDate = document.getElementById('date');
+  selDate.onchange = rendreCreneaux;
+  rendreCreneaux();
+  document.getElementById('envoyer').onclick = envoyer;
+  document.getElementById('lienAdmin').onclick = vueCode;
+  majTotal();
+}
+
+function brancherChoix(){
+  app.querySelectorAll('.choice input').forEach(i=>i.onchange=()=>{
+    const nom=i.name;
+    app.querySelectorAll(`input[name="${nom}"]`).forEach(x=>x.closest('.choice').classList.toggle('on',x.checked));
+  });
+}
+
+function rendreCreneaux(){
+  const d = document.getElementById('date').value;
+  const z = document.getElementById('crBloc');
+  if(!d){ z.innerHTML = '<p style="margin:0"><small>Choisissez d\'abord un jour ci-dessus.</small></p>'; return; }
+  z.innerHTML = creneauxDate(d).map(c=>
+      `<label class="choice"><input type="radio" name="cr" value="${esc(c)}"><div>${esc(c)}</div></label>`).join('')
+    + `<label class="choice"><input type="radio" name="cr" value="Peu importe"><div>Peu importe, prévenez-moi</div></label>`;
+  brancherChoix();
+}
+
+function majTotal(){
+  document.getElementById('out-printemps').textContent = panier.printemps;
+  document.getElementById('out-ete').textContent = panier.ete;
+  const n = panier.printemps + panier.ete;
+  document.getElementById('nbPots').textContent = n + (n>1?' pots':' pot');
+  document.getElementById('prixTotal').textContent = (n*cfg.prix) + ' €';
+}
+
+async function envoyer(){
+  const v = id => document.getElementById(id).value.trim();
+  const r = n => { const e=document.querySelector(`input[name="${n}"]:checked`); return e?e.value:''; };
+  const err = document.getElementById('erreur');
+  const c = {
+    nom:v('nom'), tel:v('tel'), adresse:v('adr'), ville:v('ville'),
+    date:v('date'), creneau:r('cr'), presence:r('pr'), paiement:r('pay'), note:v('note'),
+    printemps:panier.printemps, ete:panier.ete
+  };
+  const manque = [];
+  if(!(c.printemps+c.ete)) manque.push('au moins un pot');
+  if(!c.nom) manque.push('votre nom');
+  if(!c.tel) manque.push('votre téléphone');
+  if(!c.adresse) manque.push('votre adresse');
+  if(!c.date) manque.push('un jour de livraison');
+  if(!c.creneau) manque.push('un moment de la journée');
+  if(!c.presence) manque.push('ce qu\'on fait si vous êtes absent');
+  if(manque.length){
+    err.hidden=false; err.textContent='Il manque '+manque.join(', ')+'.';
+    err.scrollIntoView({block:'center',behavior:'smooth'}); return;
+  }
+  err.hidden=true;
+  const btn=document.getElementById('envoyer'); btn.disabled=true; btn.textContent='Envoi…';
+
+  c.id = Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+  c.cree = Date.now();
+  c.total = (c.printemps+c.ete)*cfg.prix;
+  c.statut = 'a_livrer';
+  c.paye = false;
+
+  const ok = await jset(PFX+c.id, c);
+  if(!ok){
+    btn.disabled=false; btn.textContent='Envoyer ma commande';
+    err.hidden=false;
+    err.innerHTML = "La commande n'est pas passée. Réessayez dans un instant, ou envoyez un message à Greg."
+      + (dernierEchec ? '<br><small style="color:var(--ink-soft)">' + esc(dernierEchec) + '</small>' : '');
+    console.error("Échec d'enregistrement. Mode :", MODE, "— vérifiez SB.url et SB.cle en haut du script, et que le SQL de mise en place a bien été exécuté.");
+    return;
+  }
+  const cnt = await jget(KEY_CNT) || {printemps:0,ete:0};
+  await jset(KEY_CNT, {printemps:(cnt.printemps||0)+c.printemps, ete:(cnt.ete||0)+c.ete});
+  vueMerci(c);
+}
+
+function vueMerci(c){
+  app.innerHTML = `<div class="wrap"><section class="fade">
+    <div class="done">
+      <h2>C'est noté, merci !</h2>
+      <p>Gabriel passe <b>${joli(c.date)}</b>, ${esc(c.creneau).toLowerCase()}, au ${esc(c.adresse)}.</p>
+      <p style="margin:0">
+        ${c.printemps?`${c.printemps} pot${c.printemps>1?'s':''} de printemps<br>`:''}
+        ${c.ete?`${c.ete} pot${c.ete>1?'s':''} d'été<br>`:''}
+        <b>${c.total} €</b> ${c.paiement==='cash'?'à préparer en liquide':'à virer avant le passage'+(cfg.iban?' sur '+esc(cfg.iban):'')}.
+      </p>
+    </div>
+    <p style="margin-top:1.4rem">Un imprévu ? Écrivez à Greg ou Julie${cfg.tel?' au '+esc(cfg.tel):' sur le groupe des voisins'}.</p>
+    <button class="cta" onclick="location.reload()">Passer une autre commande</button>
+  </section></div>`;
+  window.scrollTo(0,0);
+}
+
+/* ---------- itinéraire ---------- */
+let optim = {};
+
+// Les communes peuvent porter un alias de géocodage après une barre verticale,
+// indispensable à Rhode-Saint-Genèse dont les rues sont enregistrées en néerlandais.
+function nomCommune(x){ return String(x).split('|')[0].trim(); }
+function geoCommune(nom){
+  const e = (cfg.communes||[]).find(c => nomCommune(c) === nom);
+  const alias = e && e.split('|')[1];
+  return (alias || nom).trim();
+}
+const sansAccents = x => String(x).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+const cleGeo = adr => 'miel:geo3:' + sansAccents(adr).replace(/[^a-z0-9]+/g,'-').slice(0,140);
+
+async function nominatim(q, commune){
+  const r = await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=1&countrycodes=be&q='+encodeURIComponent(q));
+  const d = await r.json();
+  if(!d || !d[0]) return null;
+  const h = d[0];
+  // refuser un centre de commune ou un code postal : ce n'est pas une adresse
+  if(['city','town','village','municipality','postcode','administrative','suburb','state'].includes(h.addresstype)) return null;
+  // refuser une rue trouvée dans une autre commune
+  if(commune){
+    const a = h.address || {}, ou = sansAccents([a.city,a.town,a.village,a.municipality,a.suburb,a.postcode,h.display_name].join(' '));
+    const cible = sansAccents(commune).split(/[\s,]+/).filter(w=>w.length>3);
+    if(cible.length && !cible.some(w=>ou.includes(w))) return null;
+  }
+  return {lat:+h.lat, lon:+h.lon};
+}
+
+async function geo(adr, commune){
+  const k = cleGeo(adr + '|' + (commune||''));
+  const c = await jget(k); if(c && c.lat) return c;
+  const cible = commune ? geoCommune(commune) : '';
+  const essais = commune
+    ? [`${adr}, ${cible}, Belgique`, `${adr}, ${commune}, Belgique`]
+    : [`${adr}, Belgique`];
+  for(const q of essais){
+    try{
+      const pt = await nominatim(q, cible || commune);
+      if(pt){ await jset(k, pt); return pt; }
+    }catch(e){ /* réseau indisponible */ }
+    await new Promise(r=>setTimeout(r,1100));
+  }
+  return null;
+}
+
+async function fixerPosition(adr, commune, lat, lon){
+  await jset(cleGeo(adr + '|' + (commune||'')), {lat, lon});
+}
+
+// Accepte « 50.7448, 4.3606 » ou un lien Google Maps contenant @lat,lon
+function lireCoord(txt){
+  const m = String(txt).match(/(-?\d{1,2}[.,]\d{3,})[,\s/@]+(-?\d{1,2}[.,]\d{3,})/);
+  if(!m) return null;
+  const lat = parseFloat(m[1].replace(',','.')), lon = parseFloat(m[2].replace(',','.'));
+  if(Math.abs(lat)>90 || Math.abs(lon)>180) return null;
+  return {lat, lon};
+}
+
+function dist(a,b){
+  if(!a||!b) return 9e9;
+  const R=6371, t=x=>x*Math.PI/180;
+  const dLat=t(b.lat-a.lat), dLon=t(b.lon-a.lon);
+  const h=Math.sin(dLat/2)**2 + Math.cos(t(a.lat))*Math.cos(t(b.lat))*Math.sin(dLon/2)**2;
+  return 2*R*Math.asin(Math.sqrt(h));
+}
+
+// Coût d'une chaîne d'arrêts entre un point d'entrée et un point de sortie imposés.
+function coutChaine(l, entree, sortie){
+  let d = 0, cur = entree;
+  for(const c of l){ d += dist(cur, c._pt); cur = c._pt; }
+  if(sortie) d += dist(cur, sortie);
+  return d;
+}
+
+// Ordre optimal d'un groupe, entrée et sortie fixées.
+// Jusqu'à 8 arrêts : toutes les permutations, donc l'optimum exact.
+// Au-delà : 2-opt jusqu'à ce qu'aucune inversion n'améliore.
+function meilleurOrdre(g, entree, sortie){
+  if(g.length < 2) return g;
+  if(g.length <= 8){
+    let best = g, bc = Infinity;
+    const perm = (reste, acc) => {
+      if(!reste.length){
+        const c = coutChaine(acc, entree, sortie);
+        if(c < bc){ bc = c; best = acc.slice(); }
+        return;
+      }
+      for(let i=0;i<reste.length;i++){
+        const r = reste.slice(); const x = r.splice(i,1)[0];
+        perm(r, acc.concat([x]));
+      }
+    };
+    perm(g, []);
+    return best;
+  }
+  let ordre = g.slice(), c0 = coutChaine(ordre, entree, sortie), tour = 0, mieux = true;
+  while(mieux && tour++ < 80){
+    mieux = false;
+    for(let i=0;i<ordre.length-1;i++){
+      for(let k=i+1;k<ordre.length;k++){
+        const cand = ordre.slice(0,i).concat(ordre.slice(i,k+1).reverse(), ordre.slice(k+1));
+        const c = coutChaine(cand, entree, sortie);
+        if(c < c0 - 1e-9){ ordre = cand; c0 = c; mieux = true; }
+      }
+    }
+  }
+  return ordre;
+}
+
+// Tournée complète : maison → arrêts → maison.
+// Les créneaux restent dans l'ordre horaire ; on n'optimise qu'à l'intérieur de chacun.
+async function optimiser(liste, dateIso, progres){
+  const maison = await geo(cfg.maison, cfg.communeMaison || nomCommune((cfg.communes||[''])[0]));
+  let n = 0;
+  for(const c of liste){
+    if(!c._pt){
+      c._pt = await geo(c.adresse, c.ville);
+    }
+    if(progres) progres(++n, liste.length);
+  }
+  const cj = creneauxDate(dateIso);
+  const rang = c => { const i = cj.indexOf(c.creneau); return i<0 ? 99 : i; };
+  const parRang = {};
+  liste.forEach(c => { (parRang[rang(c)] ||= []).push(c); });
+
+  const cles = Object.keys(parRang).sort((a,b)=>a-b);
+  const situes = cles.map(k => parRang[k].filter(c=>c._pt));
+  const perdus = cles.map(k => parRang[k].filter(c=>!c._pt));
+
+  // Première passe : sortie connue seulement pour le dernier groupe (retour maison).
+  let cur = maison;
+  for(let i=0;i<situes.length;i++){
+    situes[i] = meilleurOrdre(situes[i], cur, i===situes.length-1 ? maison : null);
+    if(situes[i].length) cur = situes[i][situes[i].length-1]._pt;
+  }
+  // Passes suivantes : chaque groupe connaît maintenant le point d'entrée du suivant.
+  for(let passe=0; passe<2; passe++){
+    cur = maison;
+    for(let i=0;i<situes.length;i++){
+      const suiv = situes.slice(i+1).find(g=>g.length);
+      situes[i] = meilleurOrdre(situes[i], cur, suiv ? suiv[0]._pt : maison);
+      if(situes[i].length) cur = situes[i][situes[i].length-1]._pt;
+    }
+  }
+
+  const sortie = [];
+  situes.forEach((g,i)=> sortie.push(...g, ...perdus[i]));
+  sortie.km = maison ? Math.round(coutChaine(sortie.filter(c=>c._pt), maison, maison)) : 0;
+  return sortie;
+}
+
+function maisonComplete(){
+  const cm = cfg.communeMaison ? ', ' + geoCommune(cfg.communeMaison) : '';
+  return cfg.maison + cm;
+}
+
+function urlMaps(ordre){
+  const pts = ordre.map(c=>`${c.adresse}, ${c.ville||''}`).slice(0,9);
+  const m = encodeURIComponent(maisonComplete());
+  return 'https://www.google.com/maps/dir/?api=1&travelmode=driving&origin='+m+'&destination='+m
+    + (pts.length ? '&waypoints='+pts.map(encodeURIComponent).join('%7C') : '');
+}
+
+/* ---------- accès producteur ---------- */
+async function vueCode(){
+  // Session déjà ouverte sur cet appareil : on entre directement.
+  if(MODE === 'web'){
+    app.innerHTML = '<div class="wrap"><p class="empty">Ouverture de l\'espace producteur…</p></div>';
+    if(await reprendreSession()){
+      await chargerCommandes();
+      vueAdmin();
+      return;
+    }
+  }
+  vueCodeFormulaire();
+}
+
+function vueCodeFormulaire(){
+  app.innerHTML = `<div class="wrap"><section class="fade" style="max-width:340px">
+    <h2>Espace producteur</h2>
+    ${MODE==='web' && !SB.email
+      ? `<div class="field"><label for="mail">Adresse e-mail du compte</label><input id="mail" type="email" autocomplete="username"></div>`
+      : ''}
+    <div class="field"><label for="code">${MODE==='web' ? 'Mot de passe' : 'Code'}</label><input id="code" type="password" autocomplete="current-password"></div>
+    ${MODE==='web' ? `<label class="choice on"><input type="checkbox" id="rester" checked><div>Rester connecté sur cet appareil</div></label>` : ''}
+    <button class="cta" id="ok">Entrer</button>
+    <p class="err" id="e2" hidden>Identifiants refusés, ou base inaccessible.</p>
+    <div class="foot"><button onclick="location.reload()">Retour à la boutique</button></div>
+  </section></div>`;
+  const verifier = async v => {
+    if(MODE === 'artefact') return v === cfg.code;
+    const m = document.getElementById('mail');
+    return await distant.connexion(v, m ? m.value.trim() : '');
+  };
+  const go = async () => {
+    const rester = document.getElementById('rester');
+    if(await verifier(document.getElementById('code').value.trim())){
+      if(rester && !rester.checked) memoire('miel:session', null);
+      app.innerHTML = '<div class="wrap"><p class="empty">Chargement des commandes…</p></div>';
+      await chargerCommandes(); vueAdmin();
+    } else {
+      const e2 = document.getElementById('e2');
+      e2.hidden = false;
+      e2.innerHTML = 'Identifiants refusés, ou base inaccessible.'
+        + (dernierEchec ? '<br><small style="color:var(--ink-soft)">' + esc(dernierEchec) + '</small>' : '');
+    }
+  };
+  document.getElementById('ok').onclick = go;
+  document.getElementById('code').onkeydown = e => { if(e.key==='Enter') go(); };
+}
+
+/* ---------- admin ---------- */
+function vueAdmin(){
+  document.body.classList.add('admin');
+  const aLivrer = commandes.filter(c=>c.statut!=='livree' && c.statut!=='annulee');
+  const potsVendus = commandes.filter(c=>c.statut!=='annulee').reduce((s,c)=>s+c.printemps+c.ete,0);
+  const du = aLivrer.filter(c=>!c.paye).reduce((s,c)=>s+c.total,0);
+
+  app.innerHTML = `
+  <div class="bar"><div class="wrap"><b>Champ de l'Église — gestion</b>
+    <span style="display:flex;gap:6px">
+      ${MODE==='web' ? `<button id="deco">Déconnexion</button>` : ''}
+      <button onclick="location.reload()">Boutique</button>
+    </span></div></div>
+  <div class="wrap">
+    <div class="stats">
+      <div class="stat"><b>${potsVendus}</b><span>pots commandés</span></div>
+      <div class="stat"><b>${aLivrer.length}</b><span>à livrer</span></div>
+      <div class="stat"><b>${du} €</b><span>encore à encaisser</span></div>
+    </div>
+    <div class="tabs">
+      <button data-t="tournees" class="${onglet==='tournees'?'on':''}">Tournées</button>
+      <button data-t="toutes" class="${onglet==='toutes'?'on':''}">Toutes</button>
+      <button data-t="reglages" class="${onglet==='reglages'?'on':''}">Réglages</button>
+    </div>
+    <div id="zone"></div>
+  </div>`;
+  app.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{onglet=b.dataset.t; vueAdmin();});
+  const deco = document.getElementById('deco');
+  if(deco) deco.onclick = () => { memoire('miel:session', null); jeton=''; location.reload(); };
+  ({tournees:renduTournees, toutes:renduToutes, reglages:renduReglages})[onglet]();
+}
+
+function carte(c, num){
+  const adr = `${c.adresse}, ${c.ville||''}`;
+  return `<div class="cmd ${c.statut==='livree'?'livree':''}" id="c-${c.id}">
+    <div class="h"><b>${num?num+'. ':''}${esc(c.nom)}</b><span class="money">${c.total} €</span></div>
+    <div class="meta">
+      ${esc(adr)}<br>
+      <a href="tel:${esc(c.tel.replace(/\s/g,''))}">${esc(c.tel)}</a>
+      · <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(adr)}" target="_blank" rel="noopener">carte</a>
+    </div>
+    <div>
+      ${c.printemps?`<span class="tag p">${c.printemps} × printemps</span>`:''}
+      ${c.ete?`<span class="tag e">${c.ete} × été</span>`:''}
+      <span class="tag">${esc(c.presence)}</span>
+      <span class="tag">${c.paiement==='cash'?'liquide':'virement'}${c.paye?' · payé':''}</span>
+      ${c.note?`<span class="tag note">${esc(c.note)}</span>`:''}
+      ${c._pt===null?`<span class="tag" style="border-color:var(--alert);color:var(--alert)">adresse non localisée</span>`:''}
+    </div>
+    <div class="acts">
+      <button data-act="livree,${c.id}" class="${c.statut==='livree'?'on':''}">${c.statut==='livree'?'✓ livrée':'Marquer livrée'}</button>
+      <button data-act="paye,${c.id}" class="${c.paye?'on':''}">${c.paye?'✓ payée':'Marquer payée'}</button>
+      ${c.statut==='annulee'
+        ? `<button data-act="remettre,${c.id}">Rétablir</button>`
+        : `<button data-act="suppr,${c.id}">Annuler</button>`}
+      <button data-act="pos,${c.id}">Position</button>
+    </div>
+    <div class="acts" id="pos-${c.id}" hidden>
+      <input type="text" id="in-${c.id}" placeholder="Lien Google Maps, ou 50.7448, 4.3606"
+        style="flex:1;min-width:190px;padding:7px 9px;border:1px solid var(--line);border-radius:7px;font:inherit;font-size:.85rem">
+      <button data-pos="${c.id}">Enregistrer</button>
+    </div>
+  </div>`;
+}
+
+function brancherActions(){
+  app.querySelectorAll('[data-act]').forEach(b=>b.onclick=async()=>{
+    const [act,id]=b.dataset.act.split(',');
+    const c=commandes.find(x=>x.id===id); if(!c) return;
+    if(act==='livree') c.statut = c.statut==='livree' ? 'a_livrer' : 'livree';
+    if(act==='paye') c.paye = !c.paye;
+    if(act==='pos'){
+      const z=document.getElementById('pos-'+id);
+      z.hidden=!z.hidden;
+      if(!z.hidden) document.getElementById('in-'+id).focus();
+      return;
+    }
+    if(act==='suppr'){
+      // confirmation en deux clics : les boîtes de dialogue du navigateur sont bloquées ici
+      if(b.dataset.sur !== '1'){
+        b.dataset.sur='1'; b.textContent='Confirmer ?'; b.style.background='var(--alert)';
+        b.style.borderColor='var(--alert)'; b.style.color='#fff';
+        clearTimeout(b._t);
+        b._t = setTimeout(()=>{ b.dataset.sur='0'; b.textContent='Annuler'; b.style.cssText=''; }, 5000);
+        return;
+      }
+      c.statut = 'annulee';
+      const cnt = await jget(KEY_CNT) || {printemps:0, ete:0};
+      await jset(KEY_CNT, {printemps:Math.max(0,cnt.printemps-c.printemps), ete:Math.max(0,cnt.ete-c.ete)});
+      delete optim[c.date];
+    }
+    if(act==='remettre'){ 
+      c.statut = 'a_livrer';
+      const cnt = await jget(KEY_CNT) || {printemps:0, ete:0};
+      await jset(KEY_CNT, {printemps:(cnt.printemps||0)+c.printemps, ete:(cnt.ete||0)+c.ete});
+    }
+    b.disabled = true; b.textContent = '…';
+    const ok = await jset(c._key || PFX+c.id, c);
+    if(!ok){ b.disabled=false; b.textContent='Échec, réessayez'; return; }
+    vueAdmin();
+  });
+}
+
+function brancherPositions(){
+  app.querySelectorAll('[data-pos]').forEach(b=>b.onclick=async()=>{
+    const id=b.dataset.pos, c=commandes.find(x=>x.id===id); if(!c) return;
+    const pt = lireCoord(document.getElementById('in-'+id).value);
+    if(!pt){ b.textContent='Coordonnées illisibles'; setTimeout(()=>b.textContent='Enregistrer',2200); return; }
+    await fixerPosition(c.adresse, c.ville, pt.lat, pt.lon);
+    c._pt = pt;
+    delete optim[c.date];
+    vueAdmin();
+  });
+}
+
+function renduTournees(){
+  const z=document.getElementById('zone');
+  const actives = commandes.filter(c=>c.statut!=='annulee');
+  const parJour = {};
+  actives.forEach(c=>{ (parJour[c.date] ||= []).push(c); });
+  const jours = Object.keys(parJour).sort();
+  if(!jours.length){ z.innerHTML='<p class="empty">Aucune commande pour l\'instant. Partagez le lien sur le groupe des voisins.</p>'; return; }
+
+  const trier = j => {
+    const cj = creneauxDate(j), o = optim[j];
+    const rang = c => { const i = cj.indexOf(c.creneau); return i<0 ? 99 : i; };
+    const pos  = c => o ? (o.indexOf(c.id)+1 || 99) : 0;
+    return [...parJour[j]].sort((a,b)=> rang(a)-rang(b) || pos(a)-pos(b));
+  };
+
+  z.innerHTML = jours.map(j=>{
+    const l = parJour[j], tri = trier(j);
+    const pots = l.reduce((s,c)=>s+c.printemps+c.ete,0);
+    const cash = l.filter(c=>c.paiement==='cash'&&!c.paye).reduce((s,c)=>s+c.total,0);
+    let dernier=null, html='', n=0;
+    tri.forEach(c=>{
+      if(c.creneau!==dernier){ html += `<div class="slot">${esc(c.creneau)}</div>`; dernier=c.creneau; }
+      html += carte(c, c.statut==='livree' ? null : ++n);
+    });
+    return `<div class="tournee">
+      <h3><span>${joli(j)}</span><span>${l.length} arrêts · ${pots} pots · ${cash} € en liquide</span></h3>
+      ${html}
+      <div class="acts">
+        <button data-copie="${j}">Copier la liste pour Gabriel</button>
+        <button data-iti="${j}">Itinéraire le plus court</button>
+        <button onclick="window.print()">Imprimer</button>
+      </div>
+      <p class="err" id="st-${j}" hidden></p>
+    </div>`;
+  }).join('');
+
+  brancherActions();
+  brancherPositions();
+
+  z.querySelectorAll('[data-copie]').forEach(b=>b.onclick=()=>{
+    const j=b.dataset.copie;
+    const l = trier(j).filter(c=>c.statut!=='livree');
+    const txt = 'Tournée du '+joli(j)+' — départ et retour : '+maisonComplete()+'\n\n' + l.map((c,i)=>
+      `${i+1}. ${c.creneau} — ${c.nom}\n${c.adresse}, ${c.ville}\n${c.tel}\n`
+      + `${c.printemps?c.printemps+' printemps  ':''}${c.ete?c.ete+' été':''}\n`
+      + `${c.total} € ${c.paiement==='cash'&&!c.paye?'(à encaisser)':'(déjà réglé)'}\n`
+      + `${c.presence}${c.note?' — '+c.note:''}`).join('\n\n');
+    navigator.clipboard.writeText(txt).then(()=>{
+      b.textContent='Copié ✓'; setTimeout(()=>b.textContent='Copier la liste pour Gabriel',1800);
+    });
+  });
+
+  z.querySelectorAll('[data-iti]').forEach(b=>b.onclick=async()=>{
+    const j = b.dataset.iti;
+    const l = trier(j).filter(c=>c.statut!=='livree');
+    const st = document.getElementById('st-'+j);
+    if(!l.length){ st.hidden=false; st.textContent='Tout est déjà livré ce jour-là.'; return; }
+    const w = window.open('', '_blank');
+    if(w) w.document.write('<p style="font:16px system-ui;padding:24px">Calcul de la tournée…</p>');
+    b.disabled = true;
+    const ordre = await optimiser(l, j, (k,t)=>{ b.textContent = `Localisation ${k}/${t}…`; });
+    const situes = ordre.filter(c=>c._pt).length;
+    optim[j] = ordre.map(c=>c.id);
+    const url = urlMaps(ordre);
+    if(w) w.location.href = url; else window.open(url,'_blank');
+    renduTournees();
+    const st2 = document.getElementById('st-'+j);
+    if(st2){
+      st2.hidden = false;
+      st2.style.color = situes ? 'var(--ok)' : 'var(--alert)';
+      const rates = ordre.filter(c=>!c._pt).map(c=>c.nom);
+      st2.style.color = rates.length ? 'var(--alert)' : 'var(--ok)';
+      st2.textContent = situes
+        ? `Tournée réordonnée : ${ordre.km} km à vol d'oiseau, départ et retour au ${maisonComplete()}.`
+          + (ordre.length>9 ? ' Google Maps ne garde que les 9 premiers arrêts.' : '')
+          + (rates.length ? ` Non localisé : ${rates.join(', ')} — utilisez le bouton Position.` : '')
+        : "Aucune adresse localisée. Corrigez les positions à la main, ou vérifiez l'alias de commune dans les réglages.";
+    }
+  });
+}
+
+function renduToutes(){
+  const z=document.getElementById('zone');
+  const l = [...commandes].sort((a,b)=>b.cree-a.cree);
+  if(!l.length){ z.innerHTML='<p class="empty">Aucune commande.</p>'; return; }
+  z.innerHTML = l.map(c=>`<div class="slot">${c.statut==='annulee'?'annulée · ':''}${joli(c.date)}</div>`+carte(c)).join('')
+    + `<div class="acts" style="margin-top:18px"><button id="csv">Télécharger en CSV</button></div>`;
+  brancherActions();
+  document.getElementById('csv').onclick=()=>{
+    const head='nom;tel;adresse;commune;date;creneau;printemps;ete;total;paiement;paye;presence;note;statut\n';
+    const body=l.map(c=>[c.nom,c.tel,c.adresse,c.ville,c.date,c.creneau,c.printemps,c.ete,c.total,c.paiement,c.paye?'oui':'non',c.presence,(c.note||'').replace(/[\n;]/g,' '),c.statut].join(';')).join('\n');
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob(['\ufeff'+head+body],{type:'text/csv'}));
+    a.download='commandes-miel-2026.csv'; a.click();
+  };
+}
+
+function renduReglages(){
+  const z=document.getElementById('zone');
+  z.innerHTML = `
+  <div class="reglage">
+    <h3>Stock de départ</h3>
+    <p><small>Nombre de pots de 500 g mis en vente. 180 kg ≈ 360 pots.</small></p>
+    <div class="row">
+      <div class="field"><label for="sp">Printemps</label><input id="sp" type="text" inputmode="numeric" value="${cfg.stock.printemps}"></div>
+      <div class="field"><label for="se">Été</label><input id="se" type="text" inputmode="numeric" value="${cfg.stock.ete}"></div>
+    </div>
+    <p><small>Déjà commandés : ${vendu.printemps||0} printemps, ${vendu.ete||0} été. <button style="background:none;border:0;color:var(--ete);text-decoration:underline;cursor:pointer;font:inherit" id="resync">Recalculer</button></small></p>
+  </div>
+  <div class="reglage">
+    <h3>Vente</h3>
+    <div class="field"><label for="px">Prix du pot (€)</label><input id="px" type="text" inputmode="numeric" value="${cfg.prix}"></div>
+    <div class="field"><label for="ib">IBAN pour les virements</label><input id="ib" type="text" value="${esc(cfg.iban)}" placeholder="BE00 0000 0000 0000"></div>
+    <div class="field"><label for="tl">Téléphone affiché aux clients</label><input id="tl" type="text" value="${esc(cfg.tel)}"></div>
+    <div class="field"><label for="cm">Communes livrées (une par ligne, la première est proposée par défaut)</label>
+      <p style="margin:-.1rem 0 .5rem"><small>Si les rues de la commune sont enregistrées sous un autre nom, ajoutez-le après une barre verticale : <code>Rhode-Saint-Genèse | 1640 Sint-Genesius-Rode</code></small></p>
+      <textarea id="cm">${esc((cfg.communes||[]).join('\n'))}</textarea></div>
+  </div>
+  <div class="reglage">
+    <h3>Livraisons</h3>
+    <div class="field"><label>Jours où Gabriel livre</label>
+      ${[[3,'Mercredi'],[6,'Samedi'],[0,'Dimanche'],[5,'Vendredi']].map(([n,l])=>
+        `<label class="choice ${cfg.jours.includes(n)?'on':''}"><input type="checkbox" class="jr" value="${n}" ${cfg.jours.includes(n)?'checked':''}><div>${l}</div></label>`).join('')}
+    </div>
+    <div class="field"><label>Créneaux proposés, jour par jour</label>
+      <p style="margin:-.1rem 0 .7rem"><small>Un créneau par ligne. Laissez vide pour ne rien proposer ce jour-là.</small></p>
+      ${[[3,'Mercredi'],[6,'Samedi'],[0,'Dimanche'],[5,'Vendredi']].map(([n,l])=>
+        `<label for="cj${n}" style="font-weight:400;margin-top:.6rem">${l}</label>
+         <textarea id="cj${n}" style="min-height:62px">${esc((cfg.creneauxParJour&&cfg.creneauxParJour[n]||[]).join('\n'))}</textarea>`).join('')}
+    </div>
+    <div class="field"><label for="sm">Réserver jusqu'à combien de semaines à l'avance</label><input id="sm" type="text" inputmode="numeric" value="${cfg.semaines}"></div>
+    <div class="field"><label for="ma">Adresse de départ et de retour de la tournée</label><input id="ma" type="text" value="${esc(cfg.maison)}"></div>
+    <div class="field"><label for="mc">Commune de départ</label><input id="mc" type="text" value="${esc(cfg.communeMaison||'')}"></div>
+  </div>
+  <div class="reglage">
+    <h3>Code d'accès</h3>
+    ${MODE==='web'
+      ? `<p style="margin:0"><small>Le code est le mot de passe de votre compte, géré dans Supabase ▸ Authentication ▸ Users.</small></p>`
+      : `<div class="field"><label for="cd">Code de cet espace</label><input id="cd" type="text" value="${esc(cfg.code)}"></div>`}
+  </div>
+  <button class="cta" id="save">Enregistrer les réglages</button>
+  <p class="err" id="okmsg" hidden style="color:var(--ok)">Réglages enregistrés.</p>`;
+
+  document.getElementById('resync').onclick = async()=>{
+    const a = commandes.filter(c=>c.statut!=='annulee');
+    vendu = {printemps:a.reduce((s,c)=>s+c.printemps,0), ete:a.reduce((s,c)=>s+c.ete,0)};
+    await jset(KEY_CNT, vendu); vueAdmin();
+  };
+  document.getElementById('save').onclick = async()=>{
+    const n = (id,def) => { const x=parseInt(document.getElementById(id).value,10); return isNaN(x)?def:x; };
+    cfg.stock = {printemps:n('sp',cfg.stock.printemps), ete:n('se',cfg.stock.ete)};
+    cfg.prix = n('px',cfg.prix); cfg.semaines = Math.max(1,Math.min(12,n('sm',cfg.semaines)));
+    cfg.iban = document.getElementById('ib').value.trim();
+    cfg.tel = document.getElementById('tl').value.trim();
+    const cd = document.getElementById('cd');
+    if(cd) cfg.code = cd.value.trim() || cfg.code;
+    cfg.jours = [...document.querySelectorAll('.jr:checked')].map(i=>Number(i.value));
+    const par = {};
+    [3,6,0,5].forEach(n=>{
+      const t = document.getElementById('cj'+n);
+      const l = t ? t.value.split('\n').map(s=>s.trim()).filter(Boolean) : [];
+      if(l.length) par[n] = l;
+    });
+    cfg.creneauxParJour = par;
+    const cm = document.getElementById('cm').value.split('\n').map(s=>s.trim()).filter(Boolean);
+    if(cm.length) cfg.communes = cm;
+    cfg.maison = document.getElementById('ma').value.trim() || cfg.maison;
+    cfg.communeMaison = document.getElementById('mc').value.trim();
+    await jset(KEY_CFG, cfg);
+    const m=document.getElementById('okmsg'); m.hidden=false; setTimeout(()=>m.hidden=true,2500);
+  };
+}
+
+/* ---------- démarrage ---------- */
+(async()=>{ await chargerBase(); vuePublique(); })();
+</script>

@@ -91,14 +91,6 @@ function corpsHtml(c: Commande): string {
     Répondez simplement à ce message, ou faites-nous signe au ${e(c.tel)}.
   </td></tr>
 
-  <tr><td style="padding:22px 32px 0;">
-    <div style="border-top:1px solid #dad3c0;padding-top:18px;font-size:13px;line-height:1.7;color:#5c5c5c;">
-      Le miel de printemps cristallise et devient tartinable : c'est le signe d'un miel
-      qui n'a pas été chauffé. À conserver à l'abri de l'humidité, autour de 14 °C.
-      À consommer de préférence avant fin 2028.
-    </div>
-  </td></tr>
-
   <tr><td style="padding:26px 32px 30px;">
     <div style="border-top:4px solid #e9b23c;padding-top:16px;font-size:12px;line-height:1.8;color:#5c5c5c;">
       <strong style="color:#000;">Le Miel du Champ de l'Église</strong><br>

@@ -19,6 +19,15 @@
  *       COPIE        votre adresse, pour recevoir une copie de chaque commande
  *  5. Tester avec le bouton Test de l'éditeur avant de passer en production.
  *
+ * SÉCURITÉ
+ *  La page n'envoie que le numéro de la commande. La fonction relit elle-même
+ *  la commande en base, via commande_a_confirmer() (voir supabase-maj-confirmation.sql),
+ *  qui ne la rend qu'une seule fois et dans le quart d'heure suivant sa création.
+ *  Impossible donc de faire envoyer un message arbitraire à une adresse choisie.
+ *
+ *  Le téléphone indiqué au client est celui des Réglages de l'espace producteur
+ *  (« Téléphone affiché aux clients »), ou à défaut le secret TELEPHONE.
+ *
  * Quota gratuit : 300 envois par jour.
  */
 
@@ -38,13 +47,22 @@ const echappe = (v: unknown) =>
   String(v ?? '').replace(/[<>&"]/g, (c) =>
     ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c] as string));
 
-interface Commande {
-  nom: string; email: string; tel: string; adresse: string; ville: string;
+interface Recap {
+  nom: string; email: string; adresse: string;
   jour: string; creneau: string; pots: string; total: string;
   presence: string; remarque: string; paiement: string;
+  contact: string;           // téléphone du producteur, pas du client
 }
 
-function corpsHtml(c: Commande): string {
+const JOURS = ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
+const MOIS  = ['janvier','février','mars','avril','mai','juin','juillet','août',
+               'septembre','octobre','novembre','décembre'];
+function joli(iso: string): string {
+  const d = new Date(iso + 'T12:00:00');
+  return isNaN(d.getTime()) ? iso : `${JOURS[d.getDay()]} ${d.getDate()} ${MOIS[d.getMonth()]}`;
+}
+
+function corpsHtml(c: Recap): string {
   const e = echappe;
   return `
 <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f3f0e3;margin:0;padding:24px 12px;font-family:Helvetica,Arial,sans-serif;">
@@ -88,7 +106,7 @@ function corpsHtml(c: Commande): string {
 
   <tr><td style="padding:22px 32px 0;font-size:15px;line-height:1.6;color:#000;">
     C'est Gabriel, notre fils, qui passera. Un imprévu, un changement d'heure ?
-    Répondez simplement à ce message, ou faites-nous signe au ${e(c.tel)}.
+    Répondez simplement à ce message${c.contact ? `, ou appelez-nous au <strong>${e(c.contact)}</strong>` : ''}.
   </td></tr>
 
   <tr><td style="padding:26px 32px 30px;">
@@ -103,7 +121,7 @@ function corpsHtml(c: Commande): string {
 </td></tr></table>`;
 }
 
-async function envoyer(c: Commande) {
+async function envoyer(c: Recap) {
   const cle        = Deno.env.get('CLE_BREVO') || '';
   const expediteur = Deno.env.get('EXPEDITEUR') || '';
   const copie      = Deno.env.get('COPIE') || '';
@@ -126,16 +144,68 @@ async function envoyer(c: Commande) {
   }
 }
 
+// Appel à l'API de la base avec la clé publique reçue de la page.
+// Les règles d'accès s'appliquent : on ne peut lire que ce que le public lit.
+async function base(chemin: string, cle: string, init: RequestInit = {}) {
+  const url = Deno.env.get('SUPABASE_URL');
+  if (!url) throw new Error('SUPABASE_URL indisponible');
+  const r = await fetch(url + chemin, {
+    ...init,
+    headers: { apikey: cle, Authorization: 'Bearer ' + cle, 'Content-Type': 'application/json', ...(init.headers || {}) }
+  });
+  if (!r.ok) throw new Error('base ' + r.status + ' — ' + (await r.text()).slice(0, 200));
+  return r.json();
+}
+
+async function preparer(id: string, cle: string): Promise<Recap | null> {
+  // commande_a_confirmer ne rend la commande qu'une fois, et dans les 15 minutes.
+  const brut = await base('/rest/v1/rpc/commande_a_confirmer', cle,
+    { method: 'POST', body: JSON.stringify({ p_id: id }) });
+  if (!brut) return null;
+  const c = JSON.parse(brut);
+
+  let cfg: Record<string, unknown> = {};
+  try {
+    const l = await base('/rest/v1/miel_kv?cle=eq.miel:config&select=valeur', cle);
+    if (l && l[0]) cfg = JSON.parse(l[0].valeur);
+  } catch (_) { /* réglages par défaut */ }
+
+  const pots: string[] = [];
+  if (c.printemps) pots.push(`${c.printemps} pot${c.printemps > 1 ? 's' : ''} de printemps`);
+  if (c.ete)       pots.push(`${c.ete} pot${c.ete > 1 ? 's' : ''} d'été`);
+  const iban = String(cfg.iban || '');
+
+  return {
+    nom: c.nom, email: c.email,
+    adresse: `${c.adresse}, ${c.ville || ''}`,
+    jour: joli(c.date), creneau: c.creneau,
+    pots: pots.join(' et '), total: `${c.total} €`,
+    presence: c.presence, remarque: c.note || '',
+    paiement: c.paiement === 'cash'
+      ? 'en liquide ou par QR code à la livraison'
+      : 'par virement avant la livraison' + (iban ? ' sur ' + iban : ''),
+    contact: String(cfg.tel || Deno.env.get('TELEPHONE') || '')
+  };
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS });
   if (req.method !== 'POST') return reponse({ error: 'méthode non autorisée' }, 405);
 
   try {
-    const c = (await req.json()) as Commande;
-    if (!c?.email || !/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(c.email)) {
-      return reponse({ error: 'adresse e-mail absente ou invalide' }, 400);
+    const { id } = await req.json();
+    if (!id || !/^[A-Za-z0-9]{4,40}$/.test(String(id))) return reponse({ error: 'numéro de commande invalide' }, 400);
+
+    const cle = req.headers.get('apikey') || '';
+    if (!cle) return reponse({ error: 'clé absente' }, 401);
+
+    const recap = await preparer(String(id), cle);
+    if (!recap) return reponse({ error: 'commande introuvable, déjà confirmée ou trop ancienne' }, 404);
+    if (!recap.email || !/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(recap.email)) {
+      return reponse({ error: 'la commande ne porte pas d\'adresse e-mail valide' }, 400);
     }
-    await envoyer(c);
+
+    await envoyer(recap);
     return reponse({ ok: true });
   } catch (err) {
     console.error(err);

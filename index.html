@@ -111,6 +111,12 @@ button.cta:disabled{opacity:.45;cursor:not-allowed}
 .stat span{font-size:.78rem;color:var(--ink-soft)}
 .cmd{background:#F8F6EC;border:1px solid var(--line);border-radius:var(--r);padding:14px;margin-bottom:10px}
 .cmd.livree{opacity:.62}
+.cmd.mini{padding:8px 14px;background:transparent;border-style:dashed;opacity:.72;display:flex;align-items:center;gap:10px}
+.cmd.mini .h{flex:1;font-size:.9rem}
+.cmd.mini .h small{color:var(--ink-soft)}
+.cmd.mini .ok{color:var(--ok);font-weight:700}
+.cmd.mini .money{font-size:.9rem}
+.deplier{background:none;border:0;color:var(--ink-soft);font:inherit;font-size:.8rem;text-decoration:underline;cursor:pointer;padding:0}
 .cmd .h{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
 .cmd .h b{font-size:1.02rem}
 .cmd .money{font-family:"Archivo Black","Arial Black",sans-serif;font-weight:600;white-space:nowrap}
@@ -273,25 +279,13 @@ async function reprendreSession(){
 // de Supabase, qui détient la clé Brevo dans ses secrets : rien de sensible ici.
 // Un échec d'envoi ne fait jamais échouer la commande.
 async function envoyerMail(c){
+  // Seul le numéro part : la fonction relit la commande en base avant d'écrire.
   if(!c.email) return false;
-  const pots = [];
-  if(c.printemps) pots.push(c.printemps + ' pot' + (c.printemps>1?'s':'') + ' de printemps');
-  if(c.ete)       pots.push(c.ete + ' pot' + (c.ete>1?'s':'') + " d'été");
-
   try{
     const r = await fetch(`${SB.url}/functions/v1/confirmation`, {
       method:'POST',
       headers:{ apikey: SB.cle, Authorization: 'Bearer ' + SB.cle, 'Content-Type':'application/json' },
-      body: JSON.stringify({
-        nom: c.nom, email: c.email, tel: c.tel,
-        adresse: c.adresse + ', ' + c.ville,
-        jour: joli(c.date), creneau: c.creneau,
-        pots: pots.join(' et '), total: c.total + ' €',
-        presence: c.presence, remarque: c.note || '',
-        paiement: c.paiement === 'cash'
-          ? 'en liquide ou par QR code à la livraison'
-          : 'par virement avant la livraison' + (cfg.iban ? ' sur ' + cfg.iban : '')
-      })
+      body: JSON.stringify({ id: c.id })
     });
     if(!r.ok){ console.error('Confirmation refusée :', r.status, (await r.text()).slice(0,300)); return false; }
     return true;
@@ -861,6 +855,7 @@ function vueAdmin(){
       <div class="stat"><b>${aLivrer.length}</b><span>à livrer</span></div>
       <div class="stat"><b>${du} €</b><span>encore à encaisser</span></div>
     </div>
+    ${onglet==='nouvelle' ? '' : `<button class="cta" id="nouvelle" style="padding:11px;font-size:.95rem;margin-bottom:4px">+ Nouvelle commande</button>`}
     <div class="tabs">
       <button data-t="tournees" class="${onglet==='tournees'?'on':''}">Tournées</button>
       <button data-t="toutes" class="${onglet==='toutes'?'on':''}">Toutes</button>
@@ -870,13 +865,25 @@ function vueAdmin(){
     <div id="zone"></div>
   </div>`;
   app.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{onglet=b.dataset.t; vueAdmin();});
+  const nv = document.getElementById('nouvelle');
+  if(nv) nv.onclick = () => { onglet='nouvelle'; vueAdmin(); };
   const deco = document.getElementById('deco');
   if(deco) deco.onclick = () => { memoire('miel:session', null); jeton=''; location.reload(); };
-  ({tournees:renduTournees, toutes:renduToutes, stats:renduStats, reglages:renduReglages})[onglet]();
+  ({tournees:renduTournees, toutes:renduToutes, stats:renduStats, reglages:renduReglages, nouvelle:renduNouvelle})[onglet]();
 }
+
+const deplies = new Set();   // commandes terminées que l'on a rouvertes
 
 function carte(c, num){
   const adr = `${c.adresse}, ${c.ville||''}`;
+  if(c.statut==='livree' && c.paye && !deplies.has(c.id)){
+    const pots = [c.printemps?c.printemps+' printemps':'', c.ete?c.ete+' été':''].filter(Boolean).join(' · ');
+    return `<div class="cmd mini" id="c-${c.id}">
+      <div class="h"><span><span class="ok">✓</span> ${esc(c.nom)} <small>· ${esc(pots)}</small></span>
+        <span class="money">${c.total} €</span></div>
+      <button class="deplier" data-deplier="${c.id}">Détails</button>
+    </div>`;
+  }
   return `<div class="cmd ${c.statut==='livree'?'livree':''}" id="c-${c.id}">
     <div class="h"><b>${num?num+'. ':''}${esc(c.nom)}</b><span class="money">${c.total} €</span></div>
     <div class="meta">
@@ -909,11 +916,15 @@ function carte(c, num){
 }
 
 function brancherActions(){
+  app.querySelectorAll('[data-deplier]').forEach(b=>b.onclick=()=>{
+    deplies.add(b.dataset.deplier); vueAdmin();
+  });
   app.querySelectorAll('[data-act]').forEach(b=>b.onclick=async()=>{
     const [act,id]=b.dataset.act.split(',');
     const c=commandes.find(x=>x.id===id); if(!c) return;
     if(act==='livree') c.statut = c.statut==='livree' ? 'a_livrer' : 'livree';
     if(act==='paye') c.paye = !c.paye;
+    if(act==='livree' || act==='paye') deplies.delete(c.id);
     if(act==='pos'){
       const z=document.getElementById('pos-'+id);
       z.hidden=!z.hidden;
@@ -1020,7 +1031,7 @@ function renduTournees(){
     const j = b.dataset.iti;
     const l = trier(j).filter(c=>c.statut!=='livree');
     const st = document.getElementById('st-'+j);
-    if(!l.length){ st.hidden=false; st.textContent='Tout est déjà livré ce jour-là.'; return; }
+    if(!l.length){ st.hidden=false; st.style.color='var(--ok)'; st.textContent='Tout est livré ce jour-là, il n\'y a plus d\'itinéraire à calculer.'; return; }
     const w = window.open('', '_blank');
     if(w) w.document.write('<p style="font:16px system-ui;padding:24px">Calcul de la tournée…</p>');
     b.disabled = true;
@@ -1037,7 +1048,7 @@ function renduTournees(){
       const rates = ordre.filter(c=>!c._pt).map(c=>c.nom);
       st2.style.color = rates.length ? 'var(--alert)' : 'var(--ok)';
       st2.textContent = situes
-        ? `Tournée réordonnée : ${ordre.km} km à vol d'oiseau, départ et retour au ${maisonComplete()}.`
+        ? `Tournée réordonnée sur les ${ordre.length} arrêt${ordre.length>1?'s':''} restant${ordre.length>1?'s':''} — les commandes déjà livrées sont exclues. ${ordre.km} km à vol d'oiseau, départ et retour au ${maisonComplete()}.`
           + (ordre.length>9 ? ' Google Maps ne garde que les 9 premiers arrêts.' : '')
           + (rates.length ? ` Non localisé : ${rates.join(', ')} — utilisez le bouton Position.` : '')
         : "Aucune adresse localisée. Corrigez les positions à la main, ou vérifiez l'alias de commune dans les réglages.";
@@ -1058,6 +1069,112 @@ function renduToutes(){
     const a=document.createElement('a');
     a.href=URL.createObjectURL(new Blob(['\ufeff'+head+body],{type:'text/csv'}));
     a.download='commandes-miel-2026.csv'; a.click();
+  };
+}
+
+// Saisie d'une commande par le producteur : n'importe quelle date,
+// n'importe quel créneau, et le stock peut être dépassé si nécessaire.
+function renduNouvelle(){
+  const z = document.getElementById('zone');
+  const tous = [...new Set([].concat(...Object.values(cfg.creneauxParJour||{}), cfg.creneaux||[]))];
+  const auj = iso(new Date());
+  const communes = (cfg.communes||[]).map(nomCommune);
+
+  z.innerHTML = `
+  <div class="reglage fade">
+    <h3 style="margin-bottom:.9rem">Nouvelle commande</h3>
+    <div class="field"><label for="n-nom">Nom et prénom</label><input id="n-nom" type="text"></div>
+    <div class="row">
+      <div class="field"><label for="n-tel">Téléphone</label><input id="n-tel" type="tel"></div>
+      <div class="field"><label for="n-mail">E-mail <small style="font-weight:400">(facultatif)</small></label><input id="n-mail" type="email"></div>
+    </div>
+    <div class="field"><label for="n-adr">Rue et numéro</label><input id="n-adr" type="text"></div>
+    <div class="field"><label for="n-ville">Commune</label>
+      <input id="n-ville" type="text" list="n-communes" value="${esc(communes[0]||'')}">
+      <datalist id="n-communes">${communes.map(c=>`<option value="${esc(c)}">`).join('')}</datalist>
+    </div>
+    <div class="row">
+      <div class="field"><label for="n-date">Date de livraison</label><input id="n-date" type="date" value="${auj}"></div>
+      <div class="field"><label for="n-cr">Créneau</label>
+        <input id="n-cr" type="text" list="n-creneaux" placeholder="10h — 13h">
+        <datalist id="n-creneaux">${tous.map(c=>`<option value="${esc(c)}">`).join('')}<option value="Peu importe"></datalist>
+      </div>
+    </div>
+    <div class="row">
+      <div class="field"><label for="n-p">Pots de printemps</label><input id="n-p" type="number" min="0" value="0"></div>
+      <div class="field"><label for="n-e">Pots d'été</label><input id="n-e" type="number" min="0" value="0"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label for="n-pay">Paiement</label>
+        <select id="n-pay"><option value="cash">Liquide ou QR code</option><option value="virement">Virement</option></select></div>
+      <div class="field"><label for="n-pres">Si absent</label>
+        <select id="n-pres">
+          <option>Je serai chez moi</option><option>Déposer devant la porte</option>
+          <option>M'appeler avant de passer</option><option>Autre</option>
+        </select></div>
+    </div>
+    <div class="field"><label for="n-note">Remarque</label><textarea id="n-note"></textarea></div>
+    <label class="choice"><input type="checkbox" id="n-paye"><div>Déjà payée</div></label>
+    <label class="choice"><input type="checkbox" id="n-livree"><div>Déjà livrée <small>pour enregistrer une vente faite sur place</small></div></label>
+    <label class="choice"><input type="checkbox" id="n-conf"><div>Envoyer la confirmation par e-mail <small>si une adresse est indiquée</small></div></label>
+    <div class="total" style="margin:1rem 0"><span id="n-nb">0 pot</span><span id="n-tot">0 €</span></div>
+    <button class="cta" id="n-ok">Enregistrer la commande</button>
+    <p class="err" id="n-err" hidden></p>
+    <div class="foot" style="padding:14px 0 0"><button id="n-annul">Annuler</button></div>
+  </div>`;
+
+  z.querySelectorAll('.choice input').forEach(i=>i.onchange=()=>i.closest('.choice').classList.toggle('on',i.checked));
+  const maj = () => {
+    const n = Math.max(0,+document.getElementById('n-p').value||0) + Math.max(0,+document.getElementById('n-e').value||0);
+    document.getElementById('n-nb').textContent = n + (n>1?' pots':' pot');
+    document.getElementById('n-tot').textContent = (n*cfg.prix) + ' €';
+  };
+  ['n-p','n-e'].forEach(id=>document.getElementById(id).oninput = maj);
+  document.getElementById('n-annul').onclick = () => { onglet='tournees'; vueAdmin(); };
+
+  document.getElementById('n-ok').onclick = async () => {
+    const v = id => document.getElementById(id).value.trim();
+    const coche = id => document.getElementById(id).checked;
+    const err = document.getElementById('n-err');
+    const c = {
+      nom:v('n-nom'), tel:v('n-tel'), email:v('n-mail'),
+      adresse:v('n-adr'), ville:v('n-ville'),
+      date:v('n-date'), creneau:v('n-cr') || 'Peu importe',
+      presence:v('n-pres'), paiement:v('n-pay'), note:v('n-note'),
+      printemps:Math.max(0, parseInt(v('n-p'),10)||0),
+      ete:Math.max(0, parseInt(v('n-e'),10)||0)
+    };
+    const manque = [];
+    if(!(c.printemps+c.ete)) manque.push('au moins un pot');
+    if(!c.nom) manque.push('le nom');
+    if(!c.adresse) manque.push("l'adresse");
+    if(!c.date) manque.push('la date');
+    if(c.email && !/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(c.email)) manque.push('une adresse e-mail valide');
+    if(manque.length){ err.hidden=false; err.textContent='Il manque '+manque.join(', ')+'.'; return; }
+
+    const b = document.getElementById('n-ok'); b.disabled=true; b.textContent='Enregistrement…';
+    c.id = Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+    c.cree = Date.now();
+    c.total = (c.printemps+c.ete)*cfg.prix;
+    c.statut = coche('n-livree') ? 'livree' : 'a_livrer';
+    c.paye = coche('n-paye');
+    c.source = 'producteur';
+
+    if(!(await jset(PFX+c.id, c))){
+      b.disabled=false; b.textContent='Enregistrer la commande';
+      err.hidden=false; err.textContent="Échec de l'enregistrement : " + (dernierEchec||'raison inconnue');
+      return;
+    }
+    const cnt = await jget(KEY_CNT) || {printemps:0,ete:0};
+    await jset(KEY_CNT, {printemps:(cnt.printemps||0)+c.printemps, ete:(cnt.ete||0)+c.ete});
+    vendu = {printemps:(cnt.printemps||0)+c.printemps, ete:(cnt.ete||0)+c.ete};
+    if(coche('n-conf') && c.email) await envoyerMail(c);
+
+    c._key = PFX+c.id;
+    commandes.push(c);
+    commandes.sort((a,b)=>(a.date||'').localeCompare(b.date||'') || (a.cree||0)-(b.cree||0));
+    onglet = 'tournees';
+    vueAdmin();
   };
 }
 

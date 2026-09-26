@@ -103,7 +103,7 @@ button.cta:disabled{opacity:.45;cursor:not-allowed}
 .bar b{font-family:"Archivo Black","Arial Black",sans-serif;font-size:1.1rem}
 .bar button{background:none;border:1px solid #3B3B3B;color:var(--paper);border-radius:7px;padding:6px 11px;font:inherit;font-size:.88rem;cursor:pointer}
 .tabs{display:flex;gap:6px;margin:18px 0}
-.tabs button{flex:1;padding:9px;border:1px solid var(--line);background:#F8F6EC;border-radius:8px;font:inherit;font-size:.93rem;cursor:pointer;color:var(--ink)}
+.tabs button{flex:1;padding:9px 4px;border:1px solid var(--line);background:#F8F6EC;border-radius:8px;font:inherit;font-size:.93rem;cursor:pointer;color:var(--ink)}
 .tabs button.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px}
 .stat{background:#F8F6EC;border:1px solid var(--line);border-radius:var(--r);padding:11px}
@@ -127,6 +127,20 @@ button.cta:disabled{opacity:.45;cursor:not-allowed}
 .tournee>h3{background:var(--ink);color:var(--paper);padding:9px 13px;border-radius:8px;margin-bottom:10px;
   display:flex;justify-content:space-between;font-size:.98rem}
 .slot{font-size:.86rem;color:var(--ink-soft);margin:14px 0 7px;border-bottom:1px solid var(--line);padding-bottom:3px}
+.charge{display:flex;gap:8px;margin:-4px 0 12px}
+.charge span{flex:1;background:#F8F6EC;border:1px solid var(--line);border-radius:8px;
+  padding:7px 10px;font-size:.78rem;color:var(--ink-soft);text-align:center}
+.charge b{display:block;font-family:"Archivo Black","Arial Black",sans-serif;font-size:1.15rem;color:var(--ink)}
+.jauge{margin-bottom:18px}
+.jauge .l{display:flex;justify-content:space-between;font-size:.88rem;margin-bottom:5px}
+.jauge .l em{font-style:normal;color:var(--ink-soft)}
+.piste{height:12px;border-radius:99px;background:var(--paper-2);overflow:hidden;border:1px solid var(--line)}
+.piste i{display:block;height:100%;border-radius:99px}
+.rang{display:flex;align-items:center;gap:10px;margin-bottom:7px;font-size:.9rem}
+.rang .n{flex:none;width:118px;color:var(--ink-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rang .p{flex:1;height:9px;background:var(--paper-2);border-radius:99px;overflow:hidden}
+.rang .p i{display:block;height:100%;background:var(--ete);border-radius:99px}
+.rang .v{flex:none;width:42px;text-align:right;font-weight:600}
 .empty{text-align:center;color:var(--ink-soft);padding:36px 12px;font-size:.95rem}
 .reglage{background:#F8F6EC;border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:12px}
 .foot{padding:26px 0 40px;text-align:center}
@@ -253,6 +267,47 @@ async function reprendreSession(){
     if(d.refresh_token) memoire('miel:session', d.refresh_token);
     return true;
   }catch(e){ return false; }
+}
+
+// Confirmation par e-mail via EmailJS. Laisser les champs vides désactive
+// simplement l'envoi : la commande passe quand même.
+const MAIL = {
+  service:  '',                    // Service ID  (EmailJS ▸ Email Services)
+  modele:   '',                    // Template ID (EmailJS ▸ Email Templates)
+  cle:      '',                    // Public Key  (EmailJS ▸ Account)
+  copie:    'greg@goemaere.com'    // votre copie de chaque commande
+};
+
+async function envoyerMail(c){
+  if(!MAIL.service || !MAIL.modele || !MAIL.cle || !c.email) return false;
+  const pots = [];
+  if(c.printemps) pots.push(c.printemps + ' pot' + (c.printemps>1?'s':'') + ' de printemps');
+  if(c.ete)       pots.push(c.ete + ' pot' + (c.ete>1?'s':'') + " d'été");
+  try{
+    const r = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        service_id: MAIL.service, template_id: MAIL.modele, user_id: MAIL.cle,
+        template_params: {
+          to_email:   c.email,
+          copie:      MAIL.copie,
+          nom:        c.nom,
+          pots:       pots.join(' et '),
+          total:      c.total + ' €',
+          jour:       joli(c.date),
+          creneau:    c.creneau,
+          adresse:    c.adresse + ', ' + c.ville,
+          telephone:  c.tel,
+          presence:   c.presence,
+          remarque:   c.note || '—',
+          paiement:   c.paiement === 'cash' ? 'en liquide ou par QR code à la livraison'
+                                            : 'par virement avant la livraison'
+                        + (cfg.iban ? ' sur ' + cfg.iban : '')
+        }
+      })
+    });
+    return r.ok;
+  }catch(e){ console.error('Confirmation non envoyée :', e); return false; }
 }
 
 const MODE = window.storage ? 'artefact' : 'web';
@@ -442,6 +497,7 @@ function vuePublique(){
 
       <div class="field"><label for="nom">Nom et prénom</label><input id="nom" type="text" autocomplete="name"></div>
       <div class="field"><label for="tel">Téléphone</label><input id="tel" type="tel" autocomplete="tel" placeholder="0470 00 00 00"></div>
+      <div class="field"><label for="mailc">Adresse e-mail<small style="font-weight:400"> — pour recevoir la confirmation</small></label><input id="mailc" type="email" autocomplete="email" placeholder="prenom@exemple.be"></div>
       <div class="field"><label for="adr">Rue et numéro</label><input id="adr" type="text" autocomplete="street-address"></div>
       <div class="field"><label for="ville">Commune</label><select id="ville">${(cfg.communes||[]).map((c,i)=>`<option value="${esc(nomCommune(c))}" ${i===0?'selected':''}>${esc(nomCommune(c))}</option>`).join('')}</select></div>
 
@@ -526,7 +582,7 @@ async function envoyer(){
   const r = n => { const e=document.querySelector(`input[name="${n}"]:checked`); return e?e.value:''; };
   const err = document.getElementById('erreur');
   const c = {
-    nom:v('nom'), tel:v('tel'), adresse:v('adr'), ville:v('ville'),
+    nom:v('nom'), tel:v('tel'), email:v('mailc'), adresse:v('adr'), ville:v('ville'),
     date:v('date'), creneau:r('cr'), presence:r('pr'), paiement:r('pay'), note:v('note'),
     printemps:panier.printemps, ete:panier.ete
   };
@@ -534,6 +590,7 @@ async function envoyer(){
   if(!(c.printemps+c.ete)) manque.push('au moins un pot');
   if(!c.nom) manque.push('votre nom');
   if(!c.tel) manque.push('votre téléphone');
+  if(!c.email || !/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(c.email)) manque.push('une adresse e-mail valide');
   if(!c.adresse) manque.push('votre adresse');
   if(!c.date) manque.push('un jour de livraison');
   if(!c.creneau) manque.push('un moment de la journée');
@@ -562,10 +619,11 @@ async function envoyer(){
   }
   const cnt = await jget(KEY_CNT) || {printemps:0,ete:0};
   await jset(KEY_CNT, {printemps:(cnt.printemps||0)+c.printemps, ete:(cnt.ete||0)+c.ete});
-  vueMerci(c);
+  const parti = await envoyerMail(c);
+  vueMerci(c, parti);
 }
 
-function vueMerci(c){
+function vueMerci(c, mailParti){
   app.innerHTML = `<div class="wrap"><section class="fade">
     <div class="done">
       <h2>C'est noté, merci !</h2>
@@ -576,6 +634,7 @@ function vueMerci(c){
         <b>${c.total} €</b> ${c.paiement==='cash'?'à préparer en liquide':'à virer avant le passage'+(cfg.iban?' sur '+esc(cfg.iban):'')}.
       </p>
     </div>
+    ${mailParti ? `<p style="margin-top:1.2rem">Une confirmation vient de partir vers ${esc(c.email)}.</p>` : ''}
     <p style="margin-top:1.4rem">Un imprévu ? Écrivez à Greg ou Julie${cfg.tel?' au '+esc(cfg.tel):' sur le groupe des voisins'}.</p>
     <button class="cta" onclick="location.reload()">Passer une autre commande</button>
   </section></div>`;
@@ -817,6 +876,7 @@ function vueAdmin(){
     <div class="tabs">
       <button data-t="tournees" class="${onglet==='tournees'?'on':''}">Tournées</button>
       <button data-t="toutes" class="${onglet==='toutes'?'on':''}">Toutes</button>
+      <button data-t="stats" class="${onglet==='stats'?'on':''}">Stats</button>
       <button data-t="reglages" class="${onglet==='reglages'?'on':''}">Réglages</button>
     </div>
     <div id="zone"></div>
@@ -824,7 +884,7 @@ function vueAdmin(){
   app.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{onglet=b.dataset.t; vueAdmin();});
   const deco = document.getElementById('deco');
   if(deco) deco.onclick = () => { memoire('miel:session', null); jeton=''; location.reload(); };
-  ({tournees:renduTournees, toutes:renduToutes, reglages:renduReglages})[onglet]();
+  ({tournees:renduTournees, toutes:renduToutes, stats:renduStats, reglages:renduReglages})[onglet]();
 }
 
 function carte(c, num){
@@ -833,7 +893,7 @@ function carte(c, num){
     <div class="h"><b>${num?num+'. ':''}${esc(c.nom)}</b><span class="money">${c.total} €</span></div>
     <div class="meta">
       ${esc(adr)}<br>
-      <a href="tel:${esc(c.tel.replace(/\s/g,''))}">${esc(c.tel)}</a>
+      <a href="tel:${esc(c.tel.replace(/\s/g,''))}">${esc(c.tel)}</a>${c.email?` · <a href="mailto:${esc(c.email)}">${esc(c.email)}</a>`:''}
       · <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(adr)}" target="_blank" rel="noopener">carte</a>
     </div>
     <div>
@@ -927,7 +987,8 @@ function renduTournees(){
 
   z.innerHTML = jours.map(j=>{
     const l = parJour[j], tri = trier(j);
-    const pots = l.reduce((s,c)=>s+c.printemps+c.ete,0);
+    const pp   = l.reduce((s,c)=>s+c.printemps,0);
+    const pe   = l.reduce((s,c)=>s+c.ete,0);
     const cash = l.filter(c=>c.paiement==='cash'&&!c.paye).reduce((s,c)=>s+c.total,0);
     let dernier=null, html='', n=0;
     tri.forEach(c=>{
@@ -935,7 +996,12 @@ function renduTournees(){
       html += carte(c, c.statut==='livree' ? null : ++n);
     });
     return `<div class="tournee">
-      <h3><span>${joli(j)}</span><span>${l.length} arrêts · ${pots} pots · ${cash} € en liquide</span></h3>
+      <h3><span>${joli(j)}</span><span>${l.length} arrêt${l.length>1?'s':''} · ${cash} € en liquide</span></h3>
+      <div class="charge">
+        <span><b>${pp}</b> printemps</span>
+        <span><b>${pe}</b> été</span>
+        <span><b>${pp+pe}</b> pots à charger</span>
+      </div>
       ${html}
       <div class="acts">
         <button data-copie="${j}">Copier la liste pour Gabriel</button>
@@ -999,12 +1065,88 @@ function renduToutes(){
     + `<div class="acts" style="margin-top:18px"><button id="csv">Télécharger en CSV</button></div>`;
   brancherActions();
   document.getElementById('csv').onclick=()=>{
-    const head='nom;tel;adresse;commune;date;creneau;printemps;ete;total;paiement;paye;presence;note;statut\n';
-    const body=l.map(c=>[c.nom,c.tel,c.adresse,c.ville,c.date,c.creneau,c.printemps,c.ete,c.total,c.paiement,c.paye?'oui':'non',c.presence,(c.note||'').replace(/[\n;]/g,' '),c.statut].join(';')).join('\n');
+    const head='nom;tel;email;adresse;commune;date;creneau;printemps;ete;total;paiement;paye;presence;note;statut\n';
+    const body=l.map(c=>[c.nom,c.tel,c.email||'',c.adresse,c.ville,c.date,c.creneau,c.printemps,c.ete,c.total,c.paiement,c.paye?'oui':'non',c.presence,(c.note||'').replace(/[\n;]/g,' '),c.statut].join(';')).join('\n');
     const a=document.createElement('a');
     a.href=URL.createObjectURL(new Blob(['\ufeff'+head+body],{type:'text/csv'}));
     a.download='commandes-miel-2026.csv'; a.click();
   };
+}
+
+function renduStats(){
+  const z = document.getElementById('zone');
+  const l = commandes.filter(c => c.statut !== 'annulee');
+  if(!l.length){ z.innerHTML = '<p class="empty">Rien à mesurer tant qu\'aucune commande n\'est arrivée.</p>'; return; }
+
+  const somme = (t, f) => t.reduce((s,c)=>s+f(c), 0);
+  const vp = somme(l, c=>c.printemps), ve = somme(l, c=>c.ete);
+  const ca = somme(l, c=>c.total);
+  const encaisse = somme(l.filter(c=>c.paye), c=>c.total);
+  const livrees  = l.filter(c=>c.statut==='livree').length;
+  const panier   = Math.round(ca / l.length);
+  const potsRestants = restant('printemps') + restant('ete');
+  const valeurStock  = potsRestants * cfg.prix;
+
+  const jauge = (titre, vendu, total, couleur) => {
+    const pct = total ? Math.min(100, Math.round(vendu/total*100)) : 0;
+    return `<div class="jauge">
+      <div class="l"><span>${titre}</span><em>${vendu} / ${total} pots · ${pct} %</em></div>
+      <div class="piste"><i style="width:${pct}%;background:${couleur}"></i></div>
+    </div>`;
+  };
+
+  const classement = (titre, map) => {
+    const e = Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,8);
+    if(!e.length) return '';
+    const max = e[0][1];
+    return `<div class="reglage"><h3>${titre}</h3>
+      ${e.map(([k,v])=>`<div class="rang">
+        <span class="n">${esc(k)}</span>
+        <span class="p"><i style="width:${Math.round(v/max*100)}%"></i></span>
+        <span class="v">${v}</span></div>`).join('')}</div>`;
+  };
+
+  const compter = f => l.reduce((m,c)=>{ const k=f(c)||'—'; m[k]=(m[k]||0)+1; return m; }, {});
+  const potsPar = f => l.reduce((m,c)=>{ const k=f(c)||'—'; m[k]=(m[k]||0)+c.printemps+c.ete; return m; }, {});
+
+  const semaine = c => {
+    const d = new Date(c.date + 'T12:00:00');
+    const lundi = new Date(d); lundi.setDate(d.getDate() - ((d.getDay()+6)%7));
+    return 'sem. du ' + lundi.getDate() + ' ' + MOIS[lundi.getMonth()].slice(0,4) + '.';
+  };
+
+  z.innerHTML = `
+    <div class="stats">
+      <div class="stat"><b>${vp+ve}</b><span>pots commandés</span></div>
+      <div class="stat"><b>${ca} €</b><span>chiffre d'affaires</span></div>
+      <div class="stat"><b>${encaisse} €</b><span>déjà encaissé</span></div>
+      <div class="stat"><b>${l.length}</b><span>commandes</span></div>
+      <div class="stat"><b>${panier} €</b><span>panier moyen</span></div>
+      <div class="stat"><b>${livrees}</b><span>livrées</span></div>
+    </div>
+
+    <div class="reglage">
+      <h3>Écoulement de la récolte</h3>
+      ${jauge('Printemps', vp, cfg.stock.printemps, 'var(--printemps)')}
+      ${jauge('Été', ve, cfg.stock.ete, 'var(--ete)')}
+      <p style="margin:0"><small>Il reste ${potsRestants} pots, soit ${valeurStock} € de stock à vendre.</small></p>
+    </div>
+
+    ${classement('Pots par commune', potsPar(c=>c.ville))}
+    ${classement('Commandes par semaine de livraison', compter(semaine))}
+    ${classement('Créneaux les plus demandés', compter(c=>c.creneau))}
+    ${classement('Consigne en cas d\'absence', compter(c=>c.presence))}
+
+    <div class="reglage">
+      <h3>Paiement</h3>
+      <div class="rang"><span class="n">Liquide / QR</span>
+        <span class="p"><i style="width:${Math.round(l.filter(c=>c.paiement==='cash').length/l.length*100)}%"></i></span>
+        <span class="v">${l.filter(c=>c.paiement==='cash').length}</span></div>
+      <div class="rang"><span class="n">Virement</span>
+        <span class="p"><i style="width:${Math.round(l.filter(c=>c.paiement!=='cash').length/l.length*100)}%"></i></span>
+        <span class="v">${l.filter(c=>c.paiement!=='cash').length}</span></div>
+      <p style="margin:.6rem 0 0"><small>${ca - encaisse} € restent à encaisser.</small></p>
+    </div>`;
 }
 
 function renduReglages(){

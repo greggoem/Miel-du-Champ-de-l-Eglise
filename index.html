@@ -279,18 +279,32 @@ async function reprendreSession(){
 // Confirmation de commande. L'envoi passe par la fonction Edge « confirmation »
 // de Supabase, qui détient la clé Brevo dans ses secrets : rien de sensible ici.
 // Un échec d'envoi ne fait jamais échouer la commande.
-async function envoyerMail(c){
-  // Seul le numéro part : la fonction relit la commande en base avant d'écrire.
-  if(!c.email) return false;
+// Seul le numéro de commande part : la fonction relit la commande en base.
+// Elle envoie deux messages indépendants — la notification au producteur, qui
+// part toujours, et la confirmation au client s'il a laissé une adresse.
+// renvoi=true demande un nouvel envoi d'une commande ancienne : réservé au
+// producteur connecté, c'est son jeton de session qui l'autorise.
+async function envoyerMail(c, renvoi){
   try{
+    const auth = renvoi && jeton ? jeton : SB.cle;
     const r = await fetch(`${SB.url}/functions/v1/confirmation`, {
       method:'POST',
-      headers:{ apikey: SB.cle, Authorization: 'Bearer ' + SB.cle, 'Content-Type':'application/json' },
-      body: JSON.stringify({ id: c.id })
+      headers:{ apikey: SB.cle, Authorization: 'Bearer ' + auth, 'Content-Type':'application/json' },
+      body: JSON.stringify(renvoi ? { id: c.id, renvoi: true } : { id: c.id })
     });
-    if(!r.ok){ console.error('Confirmation refusée :', r.status, (await r.text()).slice(0,300)); return false; }
+    const d = await r.json().catch(()=>({}));
+    if(!r.ok || !d.ok){
+      dernierEchec = (d && (d.error || d.producteur)) || ('HTTP ' + r.status);
+      console.error('Envoi refusé :', r.status, d);
+      return false;
+    }
+    if(d.client && d.client !== 'ok') console.warn('Confirmation client non partie :', d.client);
     return true;
-  }catch(e){ console.error('Confirmation non envoyée :', e); return false; }
+  }catch(e){
+    dernierEchec = e && e.message ? e.message : String(e);
+    console.error('Envoi impossible :', e);
+    return false;
+  }
 }
 
 const MODE = window.storage ? 'artefact' : 'web';
@@ -915,6 +929,7 @@ function carte(c, num){
         ? `<button data-act="remettre,${c.id}">Rétablir</button>`
         : `<button data-act="suppr,${c.id}">Annuler</button>`}
       <button data-act="pos,${c.id}">Position</button>
+      <button data-act="mail,${c.id}">Renvoyer le mail</button>
     </div>
     <div class="acts" id="pos-${c.id}" hidden>
       <input type="text" id="in-${c.id}" placeholder="Lien Google Maps, ou 50.7448, 4.3606"
@@ -934,6 +949,14 @@ function brancherActions(){
     if(act==='livree') c.statut = c.statut==='livree' ? 'a_livrer' : 'livree';
     if(act==='paye') c.paye = !c.paye;
     if(act==='livree' || act==='paye') deplies.delete(c.id);
+    if(act==='mail'){
+      const t = b.textContent; b.disabled = true; b.textContent = 'Envoi…';
+      const ok = await envoyerMail(c, true);
+      b.textContent = ok ? '✓ envoyé' : 'Échec : ' + (dernierEchec||'?').slice(0,40);
+      b.style.color = ok ? 'var(--ok)' : 'var(--alert)';
+      setTimeout(()=>{ b.disabled=false; b.textContent=t; b.style.color=''; }, ok ? 2500 : 6000);
+      return;
+    }
     if(act==='pos'){
       const z=document.getElementById('pos-'+id);
       z.hidden=!z.hidden;

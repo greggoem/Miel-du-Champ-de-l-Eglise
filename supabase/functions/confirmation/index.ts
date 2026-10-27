@@ -19,6 +19,12 @@
  *       COPIE        votre adresse, pour recevoir une copie de chaque commande
  *  5. Tester avec le bouton Test de l'éditeur avant de passer en production.
  *
+ * DEUX ENVOIS PAR COMMANDE
+ *  1. la confirmation au client, seulement s'il a laissé une adresse ;
+ *  2. une notification au producteur (secret COPIE), TOUJOURS envoyée,
+ *     même si la confirmation client échoue ou qu'il n'y a pas d'adresse.
+ *  Les deux sont indépendantes : l'une ne peut plus emporter l'autre.
+ *
  * SÉCURITÉ
  *  La page n'envoie que le numéro de la commande. La fonction relit elle-même
  *  la commande en base, via commande_a_confirmer() (voir supabase-maj-confirmation.sql),
@@ -48,7 +54,7 @@ const echappe = (v: unknown) =>
     ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c] as string));
 
 interface Recap {
-  nom: string; email: string; adresse: string;
+  nom: string; email: string; tel: string; adresse: string;
   jour: string; creneau: string; pots: string; total: string;
   presence: string; remarque: string; paiement: string;
   contact: string;           // téléphone du producteur, pas du client
@@ -121,27 +127,74 @@ function corpsHtml(c: Recap): string {
 </td></tr></table>`;
 }
 
-async function envoyer(c: Recap) {
-  const cle        = Deno.env.get('CLE_BREVO') || '';
-  const expediteur = Deno.env.get('EXPEDITEUR') || '';
-  const copie      = Deno.env.get('COPIE') || '';
-  if (!cle)        throw new Error('secret CLE_BREVO absent');
-  if (!expediteur) throw new Error('secret EXPEDITEUR absent');
+// Notification interne : courte, lisible sur un téléphone, tout y est.
+function corpsProducteur(c: Recap): string {
+  const e = echappe;
+  const ligne = (l: string, v: string) => v
+    ? `<tr><td style="color:#5c5c5c;padding:3px 14px 3px 0;white-space:nowrap">${l}</td><td style="padding:3px 0">${v}</td></tr>`
+    : '';
+  return `
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f3f0e3;margin:0;padding:20px 12px;font-family:Helvetica,Arial,sans-serif;">
+<tr><td align="center">
+<table width="560" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;width:100%;background:#fff;border:1px solid #dad3c0;">
+  <tr><td style="padding:20px 24px 14px;border-bottom:4px solid #e9b23c;">
+    <div style="font-size:11px;letter-spacing:3px;color:#5c5c5c;text-transform:uppercase;">Nouvelle commande</div>
+    <div style="font-family:'Arial Black',Arial,sans-serif;font-size:21px;color:#000;padding-top:6px;">${e(c.nom)}</div>
+    <div style="font-family:'Arial Black',Arial,sans-serif;font-size:24px;color:#a85d18;padding-top:8px;">${e(c.pots)} &nbsp;·&nbsp; ${e(c.total)}</div>
+  </td></tr>
+  <tr><td style="padding:18px 24px 22px;font-size:15px;line-height:1.5;color:#000;">
+    <table cellpadding="0" cellspacing="0" border="0" style="font-size:15px;color:#000;">
+      ${ligne('Livraison', `<strong>${e(c.jour)}</strong>, ${e(c.creneau)}`)}
+      ${ligne('Adresse', e(c.adresse))}
+      ${ligne('Téléphone', c.tel ? `<a href="tel:${e(c.tel.replace(/\s/g, ''))}" style="color:#a85d18">${e(c.tel)}</a>` : '')}
+      ${ligne('E-mail', c.email ? `<a href="mailto:${e(c.email)}" style="color:#a85d18">${e(c.email)}</a>` : '<em style="color:#8a2b14">aucune — pas de confirmation envoyée</em>')}
+      ${ligne('Paiement', e(c.paiement))}
+      ${ligne('Si absent', e(c.presence))}
+      ${ligne('Remarque', e(c.remarque))}
+    </table>
+  </td></tr>
+</table>
+</td></tr></table>`;
+}
 
+async function brevo(corps: Record<string, unknown>) {
+  const cle = Deno.env.get('CLE_BREVO') || '';
+  if (!cle) throw new Error('secret CLE_BREVO absent');
   const r = await fetch('https://api.brevo.com/v3/smtp/email', {
     method: 'POST',
     headers: { 'api-key': cle, 'Content-Type': 'application/json', accept: 'application/json' },
-    body: JSON.stringify({
-      sender: { email: expediteur, name: "Le Miel du Champ de l'Église" },
-      to: [{ email: c.email, name: c.nom }],
-      ...(copie ? { bcc: [{ email: copie }], replyTo: { email: copie } } : {}),
-      subject: `Votre commande de miel — livraison ${c.jour}`,
-      htmlContent: corpsHtml(c)
-    })
+    body: JSON.stringify(corps)
   });
-  if (!r.ok) {
-    throw new Error('Brevo ' + r.status + ' — ' + (await r.text()).slice(0, 300));
-  }
+  if (!r.ok) throw new Error('Brevo ' + r.status + ' — ' + (await r.text()).slice(0, 300));
+}
+
+function expediteur() {
+  const a = Deno.env.get('EXPEDITEUR') || '';
+  if (!a) throw new Error('secret EXPEDITEUR absent');
+  return { email: a, name: "Le Miel du Champ de l'Église" };
+}
+
+async function envoyerClient(c: Recap) {
+  const copie = Deno.env.get('COPIE') || '';
+  await brevo({
+    sender: expediteur(),
+    to: [{ email: c.email, name: c.nom }],
+    ...(copie ? { replyTo: { email: copie } } : {}),
+    subject: `Votre commande de miel — livraison ${c.jour}`,
+    htmlContent: corpsHtml(c)
+  });
+}
+
+async function envoyerProducteur(c: Recap) {
+  const copie = Deno.env.get('COPIE') || '';
+  if (!copie) throw new Error('secret COPIE absent');
+  await brevo({
+    sender: expediteur(),
+    to: [{ email: copie }],
+    ...(c.email ? { replyTo: { email: c.email, name: c.nom } } : {}),
+    subject: `🍯 ${c.nom} — ${c.pots}, ${c.total} — ${c.jour}`,
+    htmlContent: corpsProducteur(c)
+  });
 }
 
 // Appel à l'API de la base avec la clé publique reçue de la page.
@@ -157,9 +210,12 @@ async function base(chemin: string, cle: string, init: RequestInit = {}) {
   return r.json();
 }
 
-async function preparer(id: string, cle: string): Promise<Recap | null> {
-  // commande_a_confirmer ne rend la commande qu'une fois, et dans les 15 minutes.
-  const brut = await base('/rest/v1/rpc/commande_a_confirmer', cle,
+async function preparer(id: string, cle: string, renvoi: boolean): Promise<Recap | null> {
+  // Commande neuve : commande_a_confirmer ne la rend qu'une fois, dans les 15 minutes.
+  // Renvoi demandé depuis l'espace producteur : commande_pour_renvoi, sans limite,
+  // réservée aux comptes connectés — la clé publique seule ne peut pas l'appeler.
+  const rpc = renvoi ? 'commande_pour_renvoi' : 'commande_a_confirmer';
+  const brut = await base('/rest/v1/rpc/' + rpc, cle,
     { method: 'POST', body: JSON.stringify({ p_id: id }) });
   if (!brut) return null;
   const c = JSON.parse(brut);
@@ -176,7 +232,7 @@ async function preparer(id: string, cle: string): Promise<Recap | null> {
   const iban = String(cfg.iban || '');
 
   return {
-    nom: c.nom, email: c.email,
+    nom: c.nom, email: c.email || '', tel: c.tel || '',
     adresse: `${c.adresse}, ${c.ville || ''}`,
     jour: joli(c.date), creneau: c.creneau,
     pots: pots.join(' et '), total: `${c.total} €`,
@@ -193,20 +249,30 @@ Deno.serve(async (req) => {
   if (req.method !== 'POST') return reponse({ error: 'méthode non autorisée' }, 405);
 
   try {
-    const { id } = await req.json();
+    const { id, renvoi } = await req.json();
     if (!id || !/^[A-Za-z0-9]{4,40}$/.test(String(id))) return reponse({ error: 'numéro de commande invalide' }, 400);
 
     const cle = req.headers.get('apikey') || '';
     if (!cle) return reponse({ error: 'clé absente' }, 401);
+    // Le jeton de session du producteur voyage dans Authorization ; la clé publique
+    // ne donne pas accès à commande_pour_renvoi, la base s'en charge.
+    const jeton = (req.headers.get('authorization') || '').replace(/^Bearer /i, '') || cle;
 
-    const recap = await preparer(String(id), cle);
+    const recap = await preparer(String(id), renvoi ? jeton : cle, !!renvoi);
     if (!recap) return reponse({ error: 'commande introuvable, déjà confirmée ou trop ancienne' }, 404);
-    if (!recap.email || !/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(recap.email)) {
-      return reponse({ error: 'la commande ne porte pas d\'adresse e-mail valide' }, 400);
+
+    // La notification au producteur part d'abord, et quoi qu'il arrive ensuite.
+    let producteur = 'ok', client = 'ignoré : pas d\'adresse client';
+    try { await envoyerProducteur(recap); }
+    catch (e) { producteur = String(e instanceof Error ? e.message : e); console.error('Notification producteur :', e); }
+
+    if (recap.email && /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(recap.email)) {
+      try { await envoyerClient(recap); client = 'ok'; }
+      catch (e) { client = String(e instanceof Error ? e.message : e); console.error('Confirmation client :', e); }
     }
 
-    await envoyer(recap);
-    return reponse({ ok: true });
+    const ok = producteur === 'ok' || client === 'ok';
+    return reponse({ ok, producteur, client }, ok ? 200 : 502);
   } catch (err) {
     console.error(err);
     return reponse({ error: String(err instanceof Error ? err.message : err) }, 500);

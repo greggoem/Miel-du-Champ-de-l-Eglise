@@ -1,5 +1,14 @@
 # Historique
 
+## Notification du producteur — octobre 2026
+
+La notification de Greg n'était qu'une copie cachée de la confirmation envoyée
+au client : sans adresse client, ou si Brevo refusait cet envoi, il ne recevait
+rien et ne pouvait pas distinguer une panne d'une absence de commande. Les deux
+envois sont désormais indépendants, celui du producteur part en premier et
+quoi qu'il arrive. Ajout d'un bouton de renvoi manuel dans l'espace producteur,
+réservé aux comptes connectés.
+
 Le projet a été construit au fil d'une conversation, en modifiant un même
 fichier. Les états intermédiaires n'ont pas été conservés : ce journal retrace
 les étapes de mémoire, il ne correspond pas à des commits réels. L'historique
